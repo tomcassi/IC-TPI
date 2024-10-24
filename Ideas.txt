@@ -3,6 +3,3 @@ Juego buscaminas con algo
 Algo con la base de dato lenguaje de señas
 Detectar emociones
 Juego hielo o ajedrez descargado y ahi hacer algo que lo gane
-
-
-branch
