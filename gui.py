@@ -1,3 +1,4 @@
+#Interfaz de la aplicacion
 import customtkinter
 
 class App(customtkinter.CTk):
