@@ -20,14 +20,17 @@ midi_data.instruments[instrumento].notes[nota].pitch
 """
 
 import pretty_midi
+import numpy as np
+import MLP
+import RNN
 
 def cargar_cancion(file_path):
     midi_data = pretty_midi.PrettyMIDI(file_path)
     return midi_data
 
-midi_data = cargar_cancion("Happy Birthday MIDI.mid")
 
+if __name__ == "__main__":
+    print("Main")
+    midi_data = cargar_cancion("Happy Birthday MIDI.mid")
 
-
-
-# midi_data.write("midi modificado.mid")
+    # midi_data.write("midi modificado.mid")
