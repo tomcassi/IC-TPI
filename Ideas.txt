@@ -1,6 +1,0 @@
-Identifacion de personas o algo usando algo
-Juego buscaminas con algo
-Algo con la base de dato lenguaje de señas
-Detectar emociones
-Juego hielo o ajedrez descargado y ahi hacer algo que lo gane
-Generador de subtitulos en base a un video
