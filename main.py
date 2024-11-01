@@ -37,5 +37,5 @@ if __name__ == "__main__":
     midi_data = cargar_cancion("Happy Birthday MIDI.mid")
     X,y = MLP.crear_secuencias(midi_data)
 
-    print(")")
+    print("")
     # midi_data.write("midi modificado.mid")
