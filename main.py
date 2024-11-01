@@ -16,6 +16,7 @@ midi_data.instruments[instrumento].notes[nota].start
 midi_data.instruments[instrumento].notes[nota].end
 midi_data.instruments[instrumento].notes[nota].velocity
 midi_data.instruments[instrumento].notes[nota].pitch
+midi_data.instruments[instrumento].notes.len()
 =========================================================
 """
 
@@ -29,8 +30,12 @@ def cargar_cancion(file_path):
     return midi_data
 
 
+
+
 if __name__ == "__main__":
     print("Main")
     midi_data = cargar_cancion("Happy Birthday MIDI.mid")
+    X,y = MLP.crear_secuencias(midi_data)
 
+    print(")")
     # midi_data.write("midi modificado.mid")
