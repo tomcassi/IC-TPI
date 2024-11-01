@@ -7,7 +7,7 @@ import numpy as np
 def entrenamiento(X ,y):
     # Cargar un conjunto de datos de ejemplo
     # Dividir el conjunto de datos en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True)
 
     # Crear el modelo MLPClassifier
     mlp = MLPClassifier(hidden_layer_sizes=(5,5), max_iter=1000)
@@ -25,17 +25,20 @@ def entrenamiento(X ,y):
     # Imprimir algunas predicciones
     for i in range(len(y_test)):
         print(f"Predicción: {y_pred[i]}, Real: {y_test[i]}")
+        
+    y_pred_total = mlp.predict(X)
     
-    return y_pred
+    return y_pred_total
 
 
 
 def crear_secuencias(midi_data, longitud_secuencia = 5):
-    X, y = [],[]
+    X, y,Xfinal = [],[],[]
     
-    for nota in range(0,len(midi_data.instruments[0].notes),longitud_secuencia):
+    for nota in range(0,len(midi_data.instruments[0].notes),longitud_secuencia+1):
         listanotasX = []
         listapitchX = []
+        Xfinalnotas = []
         
         if nota+longitud_secuencia < len(midi_data.instruments[0].notes):
             listanotasX = midi_data.instruments[0].notes[nota:nota+longitud_secuencia]
@@ -44,12 +47,15 @@ def crear_secuencias(midi_data, longitud_secuencia = 5):
             for n in listanotasX:
                 listapitchX.append(n.pitch)
             y.append(midi_data.instruments[0].notes[nota+longitud_secuencia].pitch) 
-            X.append(listapitchX)        
-        
+            X.append(listapitchX)
+        else:
+            Xfinalnotas.append(midi_data.instruments[0].notes[nota:-1])
+            for n in Xfinalnotas:
+                Xfinal.append(n.pitch)
+            break
 
 
-
-    return X,y
+    return X,y,Xfinal
 
 
 if __name__ == "__main__":
