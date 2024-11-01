@@ -10,7 +10,7 @@ def entrenamiento(X ,y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True)
 
     # Crear el modelo MLPClassifier
-    mlp = MLPClassifier(hidden_layer_sizes=(5,5), max_iter=1000)
+    mlp = MLPClassifier(hidden_layer_sizes=(3,1), max_iter=1000)
 
     # Entrenar el modelo
     mlp.fit(X_train, y_train)
@@ -49,9 +49,15 @@ def crear_secuencias(midi_data, longitud_secuencia = 5):
             y.append(midi_data.instruments[0].notes[nota+longitud_secuencia].pitch) 
             X.append(listapitchX)
         else:
-            Xfinalnotas.append(midi_data.instruments[0].notes[nota:-1])
+            
+            Xfinalnotas = midi_data.instruments[0].notes[nota:-1]
             for n in Xfinalnotas:
-                Xfinal.append(n.pitch)
+                listapitchX.append(n.pitch)
+        
+            Xfinal= listapitchX
+            
+            
+            
             break
 
 

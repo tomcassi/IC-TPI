@@ -35,6 +35,8 @@ if __name__ == "__main__":
     print("Main")
     # midi_data = cargar_cancion("Happy Birthday MIDI.mid")
     midi_data = cargar_cancion("youre only lonely L.mid")
+
+    
     X,y,Xfinal = MLP.crear_secuencias(midi_data)
     
     y_pred = MLP.entrenamiento(X,y)
@@ -44,13 +46,16 @@ if __name__ == "__main__":
         for pitch in X[patron-1]:
             X_y_concatenado.append(pitch)
         X_y_concatenado.append(y_pred[patron])
-    X_y_concatenado.append(Xfinal)
+        
+        
+    for i in range(len(Xfinal)):
+        X_y_concatenado.append(Xfinal[i])
     
     X_y_concatenado = np.array(X_y_concatenado)
     print(X_y_concatenado)
     
     lista_notas = midi_data.instruments[0].notes[:]
-    for nota in range(len(lista_notas)):
+    for nota in range(len(lista_notas)-1):
         lista_notas[nota].pitch = X_y_concatenado[nota]
     
     midi_data.instruments[0].notes = lista_notas
@@ -58,5 +63,10 @@ if __name__ == "__main__":
     midi_data.instruments = [midi_data.instruments[0]]
     
     print("")
-    midi_data.write("midi modificado.mid")
+    midi_data.write("Bateria modificada.mid")
     
+    
+    #Este es para comparar
+    midi2_data = cargar_cancion("youre only lonely L.mid")
+    midi2_data.instruments = [midi2_data.instruments[0]]  
+    midi2_data.write("Bateria original.mid")
