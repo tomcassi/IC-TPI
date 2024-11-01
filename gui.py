@@ -1,5 +1,4 @@
 #Interfaz de la aplicacion
-from typing import Any, Tuple
 import customtkinter
 
 class file_frame(customtkinter.CTkFrame):
