@@ -29,8 +29,7 @@ def cargar_cancion(file_path):
     midi_data = pretty_midi.PrettyMIDI(file_path)
     return midi_data
 
-
-# def escribir_cancion(notas):
+# def escribir_cancion(instrumentos?, notas?, etc):
 #     # midi_generado = pretty_midi.PrettyMIDI()
 #     # midi_generado.instruments.append(pretty_midi.Instrument(0))
     
@@ -39,11 +38,6 @@ def cargar_cancion(file_path):
 #     #     midi_generado.instruments[0].notes.append(note)
     
 #     return midi_generado
-
-def escribir_midi(midi_data, file_path):
-    
-    midi_data.write(file_path)
-    return
 
 
 if __name__ == "__main__":
