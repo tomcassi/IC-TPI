@@ -28,7 +28,26 @@ def cargar_cancion(file_path):
     midi_data = pretty_midi.PrettyMIDI(file_path)
     return midi_data
 
+def reemplazar_nota(midi_data, cant_originales=5, cant_reemplazos=1):
+    # Implementar
+    return midi_data
 
+def crear_secuencias(midi_data, longitud_secuencia = 5):
+    X, y = [],[]
+    
+    for nota in range(0,len(midi_data.instruments[0].notes),longitud_secuencia):
+        listanotasX = []
+        listapitchX = []
+        
+        if nota+longitud_secuencia <= len(midi_data.instruments[0].notes):
+            listanotasX = midi_data.instruments[0].notes[nota:nota+longitud_secuencia]
+            # print("X",nota,nota+longitud_secuencia)
+            # print("y",nota+longitud_secuencia)
+            for n in listanotasX:
+                listapitchX.append(n.pitch)
+            y.append(midi_data.instruments[0].notes[nota+longitud_secuencia].pitch) 
+            X.append(listapitchX)
+    return X,y
 
 
 if __name__ == "__main__":
@@ -37,7 +56,7 @@ if __name__ == "__main__":
     midi_data = cargar_cancion("youre only lonely L.mid")
 
     
-    X,y,Xfinal = MLP.crear_secuencias(midi_data)
+    X,y = MLP.crear_secuencias(midi_data, longitud_secuencia = 5)
     
     y_pred = MLP.entrenamiento(X,y)
     
