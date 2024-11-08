@@ -31,6 +31,8 @@ Para saber que instrumento es se utiliza el midi_data.instruments[instrumento].p
 72-79: Flautas y otros instrumentos de viento (ej., 73 = Flauta, 74 = Flautín)
 80-87: Sintetizadores y sonidos varios
 88-127: Efectos de sonido y percusión (ej., 117 = Tambor de madera, 120-127 = Efectos de sonido).
+
+el instrumento del canal 10 esta reservado para percusion, ignora el program
 =========================================================
 """
 
