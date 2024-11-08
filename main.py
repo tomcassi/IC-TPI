@@ -45,8 +45,7 @@ if __name__ == "__main__":
     cant_predicciones = 10
 
     print("Main")
-    # midi_data = cargar_cancion("Happy Birthday MIDI.mid")
-    midi_data = cargar_cancion("youre only lonely L.mid")
+    midi_data = cargar_cancion("Audios/beethoven1.mid")
     
     
     #chequear longitud de la secuencia
