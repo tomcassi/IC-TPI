@@ -16,6 +16,21 @@ midi_data.instruments[instrumento].notes[nota].start
 midi_data.instruments[instrumento].notes[nota].end
 midi_data.instruments[instrumento].notes[nota].velocity
 midi_data.instruments[instrumento].notes[nota].pitch
+
+Para saber que instrumento es se utiliza el midi_data.instruments[instrumento].program()
+
+0-7: Pianos (ej., 0 = Piano acústico, 4 = Clavicordio)
+8-15: Instrumentos de percusión cromática (ej., 9 = Glockenspiel, 11 = Vibrafono)
+16-23: Órganos (ej., 16 = Órgano de percusión, 19 = Órgano de iglesia)
+24-31: Guitarras (ej., 24 = Guitarra acústica de nylon, 27 = Guitarra eléctrica limpia)
+32-39: Bajos (ej., 32 = Bajo acústico, 36 = Bajo eléctrico de púa)
+40-47: Cuerdas (ej., 40 = Violín, 44 = Contrabajo)
+48-55: Instrumentos de cuerda (ej., 48 = Ensamble de cuerdas, 50 = Pizzicato)
+56-63: Trompetas y otros metales (ej., 56 = Trompeta, 60 = Trompeta de madera)
+64-71: Instrumentos de viento de madera (ej., 64 = Soprano Sax, 66 = Fagot)
+72-79: Flautas y otros instrumentos de viento (ej., 73 = Flauta, 74 = Flautín)
+80-87: Sintetizadores y sonidos varios
+88-127: Efectos de sonido y percusión (ej., 117 = Tambor de madera, 120-127 = Efectos de sonido).
 =========================================================
 """
 
