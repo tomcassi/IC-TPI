@@ -1,0 +1,6 @@
+Mlp ande
+LSTM ande
+leer bien acordes creo que esta, probar si sumando 1 suena giual
+hacer metricas objetivas, por ejemplo ver que onda con la media y todo esos estadistico para ver si anda bien
+descomponer MLP en 3 o en un modelo para cada caracteristica
+descomponer LSTM en 3 o en un modelo para cada caracteristica
