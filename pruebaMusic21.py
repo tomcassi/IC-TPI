@@ -26,6 +26,7 @@ def descomponer_midi_en_acordes_y_notas(midi_file):
         for elemento in pista.flat:
             # Si el elemento es un acorde
             if isinstance(elemento, chord.Chord):
+                # Obtener los nombres, números de pitch y velocidades de las notas en el acorde
                 acorde_nombres = [n.nameWithOctave for n in elemento.notes]
                 acorde_pitches = [n.pitch.midi for n in elemento.notes if n.pitch is not None]
                 acorde_velocidades = [n.volume.velocity for n in elemento.notes if n.volume.velocity is not None]
@@ -48,6 +49,7 @@ def descomponer_midi_en_acordes_y_notas(midi_file):
                 
             # Si el elemento es una nota individual
             elif isinstance(elemento, note.Note):
+                # Guardar el nombre, pitch y velocidad de la nota
                 nombres_pista.append(elemento.nameWithOctave)
                 pitch_list = [elemento.pitch.midi] if elemento.pitch is not None else [0]
                 velocity = [elemento.volume.velocity if elemento.volume.velocity is not None else 0]
@@ -71,36 +73,34 @@ def descomponer_midi_en_acordes_y_notas(midi_file):
     return nombres_acordes_y_notas, numeros_pitch, velocidades, duraciones
 
 
-# Función para reconstruir y guardar un archivo MIDI
+# Modificar la función para incluir un desplazamiento temporal
 def guardar_como_midi(nombres, pitches, velocidades, duraciones, archivo_salida):
-    # Crear una nueva secuencia MIDI
     nuevo_midi = stream.Score()
     
-    # Crear una pista para cada pista original
     for i in range(len(nombres)):
         nueva_pista = stream.Part()
         
-        # Recorrer los datos y crear las notas/acordes
+        offset = 0.0  # Lleva la cuenta del tiempo en la pista
+        
         for nombre, pitch, velocidad, duracion in zip(nombres[i], pitches[i], velocidades[i], duraciones[i]):
-            # Si es un acorde
             if isinstance(nombre, str) and 'Acorde' in nombre:
-                # Crear un acorde con los pitches
                 acorde = chord.Chord(pitch)
                 acorde.quarterLength = duracion
-                acorde.volume.velocity = sum(velocidad) // len(velocidad)  # Promedio de la velocidad
+                acorde.offset = offset  # Asigna el offset al acorde
                 nueva_pista.append(acorde)
-            else:  # Si es una nota individual
+            else:
                 for p, v in zip(pitch, velocidad):
-                    if p != 0:  # No agregar notas de pitch 0
+                    if p != 0:
                         n = note.Note(p)
                         n.quarterLength = duracion
-                        n.volume.velocity = v
+                        n.offset = offset  # Asigna el offset a la nota
                         nueva_pista.append(n)
+            
+            # Aumenta el offset según la duración de la última nota/acorde añadida
+            offset += duracion
         
-        # Añadir la pista al score
         nuevo_midi.append(nueva_pista)
     
-    # Guardar el archivo MIDI
     nuevo_midi.write('midi', fp=archivo_salida)
     print(f"Archivo MIDI guardado en: {archivo_salida}")
 
