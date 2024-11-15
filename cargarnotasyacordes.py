@@ -8,6 +8,22 @@ for i in range(-1, 128):  # Corrige el rango para incluir -1 hasta 127
     notasyacordes.append([i])  # Agregar sublistas con el valor correspondiente
 
 
+def cargar_acordes_canciones(carpeta_audios="Audios/"):
+    print("\n=====Cargando acordes=====")
+    for nombre_archivo in os.listdir(carpeta_audios):
+        archivo_midi = os.path.join(carpeta_audios, nombre_archivo)
+        
+        try:
+            pitches = cargar_acordes(archivo_midi)
+            print(f'Archivo cargado: {archivo_midi}')
+        except ValueError as e:
+            print(e)
+            continue
+        
+        for pitch in pitches:
+            if pitch not in notasyacordes:
+                notasyacordes.append(pitch)
+
 
 def cargar_acordes(midi_file):
     # Cargar el archivo MIDI

@@ -10,16 +10,6 @@ import numpy as np
 errores = []  # Lista para almacenar los errores en cada época
 
 def procesar_primera_pista(midi_file):
-    """
-    Procesa la primera pista de un archivo MIDI, extrayendo notas, acordes, silencios y tempo.
-    
-    Args:
-        midi_file (str): Ruta al archivo MIDI que se desea procesar.
-    
-    Returns:
-        tuple: Contiene las listas de nombres, pitches, velocidades, duraciones y el tempo en BPM.
-    """
-    # Cargar el archivo MIDI
     try:
         midi_data = converter.parse(midi_file)
     except Exception as e:
@@ -59,25 +49,24 @@ def procesar_primera_pista(midi_file):
         if isinstance(elemento, chord.Chord):  # Si el elemento es un acorde
             nombres.append(f"Acorde: {', '.join(n.nameWithOctave for n in elemento.notes)}")  # Nombres de las notas del acorde
             pitches.append([n.pitch.midi for n in elemento.notes])  # Alturas de las notas
-            velocidades.append([n.volume.velocity or 0 for n in elemento.notes])  # Velocidades de cada nota
+            velocidad_acorde = elemento.notes[0].volume.velocity if elemento.notes else 0
+            velocidades.append(velocidad_acorde)
             duraciones.append(elemento.quarterLength)  # Duración del acorde
         elif isinstance(elemento, note.Note):  # Si el elemento es una nota
             nombres.append(elemento.nameWithOctave)  # Nombre de la nota (con octava)
             pitches.append([elemento.pitch.midi])  # Altura MIDI de la nota
-            velocidades.append([elemento.volume.velocity or 0])  # Velocidad de la nota
+            velocidades.append(elemento.volume.velocity)  # Velocidad de la nota
             duraciones.append(elemento.quarterLength)  # Duración de la nota
         elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
             nombres.append("Silencio")  # Indica que es un silencio
             pitches.append([-1])  # Un silencio no tiene altura (pitch)
-            velocidades.append([0])  # Un silencio no tiene velocidad
+            velocidades.append(0)  # Un silencio no tiene velocidad
             duraciones.append(float(elemento.quarterLength))  # Duración del silencio
 
     # Retornar los datos procesados junto con el tempo
     return nombres, pitches, velocidades, duraciones, tempo_bpm
 
 def cargarPista (archivo_midi):
-    # Definir la carpeta donde estoy parado
-    
     # Listas grandes para almacenar todos los datos de los archivos MIDI
     todos_caracteristicas = []
     
@@ -126,8 +115,6 @@ def entrenar_modelo(X, y, modelo1):
 
     return modelo1, y_pred, y_test ,X_test
 
-
-
 def crear_secuencias(caracteristicas, longitud_secuencia):
     X, y = [], []
     for nota in range(len(caracteristicas) - longitud_secuencia):
@@ -154,10 +141,6 @@ def entrenar_modelo(X, y, mlp):
     # Evaluar la precisión del modelo
     accuracy = accuracy_score(y_test, y_pred)
     print("Precisión del modelo:", accuracy)
-
-    # Imprimir algunas predicciones
-    # for i in range(len(y_test)):
-    #     print(f"Predicción: {y_pred[i]}, Real: {y_test[i]}")
         
     return mlp, y_pred, y_test
 
@@ -165,23 +148,13 @@ def entrenar_modelo(X, y, mlp):
 if __name__ == "__main__":
     longitud_secuencia = 5
     carpeta_audios = "Audios/"
-    print("\n=====Cargando acordes=====")
-    for nombre_archivo in os.listdir(carpeta_audios):
-        archivo_midi = os.path.join(carpeta_audios, nombre_archivo)
-        
-        try:
-            pitches = cargar_acordes(archivo_midi)
-            print(f'Archivo cargado: {archivo_midi}')
-        except ValueError as e:
-            print(e)
-            continue
-        
-        for pitch in pitches:
-            if pitch not in notasyacordes:
-                notasyacordes.append(pitch)
+    cargar_acordes_canciones(carpeta_audios)
+
     print("\n=====Cargando caracteristicas=====")
                 
-    mlp = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
+    mlp_pitch = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
+    mlp_velocity = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
+    mlp_duration = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
     
 
     for nombre_archivo in os.listdir(carpeta_audios):
@@ -194,8 +167,24 @@ if __name__ == "__main__":
         
         X,y = crear_secuencias(todos_caracteristicas[0],longitud_secuencia)
         
-        mlp, y_pred, y_test = entrenar_modelo(X,y,mlp)
-        y_test = np.array(y_test)
+        mlp_pitch, y_pred, y_test = entrenar_modelo(X,y,mlp_pitch)
         
+        # y_test = np.array(y_test)
+        
+        X,y = crear_secuencias(todos_caracteristicas[1],longitud_secuencia)
+        
+        mlp_velocity, y_pred, y_test = entrenar_modelo(X,y,mlp_velocity)
+        
+        X,y = crear_secuencias(todos_caracteristicas[2],longitud_secuencia)
+        # Multiplicar cada valor dentro de X por 100 y convertir a int
+        X = [[int(valor * 1000) for valor in sublista] for sublista in X]
+        
+        # Multiplicar cada valor en y por 100 y convertir a int
+        y = [int(valor * 1000) for valor in y]
+        
+        mlp_duration, y_pred, y_test = entrenar_modelo(X,y,mlp_duration)
+        
+        
+        y_test = np.array(y_test)
 
 
