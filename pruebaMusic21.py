@@ -1,4 +1,6 @@
-from music21 import converter, note, chord, stream, tempo
+from music21 import converter, tempo, chord, note, instrument
+import warnings
+warnings.filterwarnings('ignore')
 
 # Función para procesar la primera pista de un archivo MIDI
 def procesar_primera_pista(midi_file):
@@ -12,24 +14,42 @@ def procesar_primera_pista(midi_file):
         tuple: Contiene las listas de nombres, pitches, velocidades, duraciones y el tempo en BPM.
     """
     # Cargar el archivo MIDI
-    midi_data = converter.parse(midi_file)
-    
+    try:
+        midi_data = converter.parse(midi_file)
+    except Exception as e:
+        raise ValueError(f"No se pudo cargar el archivo MIDI: {e}")
+
     # Obtener el tempo del archivo MIDI (si está definido, se toma el primero encontrado)
     tempos = midi_data.flat.getElementsByClass(tempo.MetronomeMark)
     tempo_bpm = tempos[0].number if len(tempos) > 0 else 120  # Valor predeterminado: 120 BPM
-    
-    # Seleccionar la primera pista del archivo MIDI
-    # Si tiene partes (tracks), selecciona la primera; si no, toma todo el archivo
-    primera_pista = midi_data.parts[0] if len(midi_data.parts) > 0 else midi_data
-    
+
+    # Filtrar la parte de "Piano Right"
+    piano_right = None
+    for part in midi_data.parts:
+        # Verificar si el nombre de la parte contiene "Piano Right"
+        if part.partName and "Piano right" in part.partName:
+            piano_right = part
+            break
+        # Alternativamente, verificar si el instrumento es Piano
+        elif any(isinstance(instr, instrument.Piano) for instr in part.getElementsByClass(instrument.Instrument)):
+            piano_right = part
+            break
+
+    # Validar si se encontró la parte de "Piano Right"
+    if piano_right:
+        print("Parte 'Piano Right' encontrada.")
+    else:
+        print("No se encontró una parte etiquetada como 'Piano Right'. Usando la primera pista disponible.")
+        piano_right = midi_data.parts[0]  # Usar la primera pista si no se encuentra "Piano Right"
+
     # Listas para almacenar los datos de la pista
     nombres = []       # Nombres de las notas, acordes o silencios
     pitches = []       # Alturas (pitches) en formato MIDI (notas numéricas)
     velocidades = []   # Velocidades (volúmenes de las notas/acordes)
     duraciones = []    # Duraciones de los elementos en "quarterLength" (unidad relativa a negras)
-    
+
     # Recorrer los elementos de la pista (notas, acordes, silencios)
-    for elemento in primera_pista.flat.notesAndRests:
+    for elemento in piano_right.flat.notesAndRests:
         if isinstance(elemento, chord.Chord):  # Si el elemento es un acorde
             nombres.append(f"Acorde: {', '.join(n.nameWithOctave for n in elemento.notes)}")  # Nombres de las notas del acorde
             pitches.append([n.pitch.midi for n in elemento.notes])  # Alturas de las notas
@@ -45,7 +65,7 @@ def procesar_primera_pista(midi_file):
             pitches.append([0])  # Un silencio no tiene altura (pitch)
             velocidades.append([0])  # Un silencio no tiene velocidad
             duraciones.append(float(elemento.quarterLength))  # Duración del silencio
-    
+
     # Retornar los datos procesados junto con el tempo
     return nombres, pitches, velocidades, duraciones, tempo_bpm
 
@@ -97,11 +117,11 @@ def guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm,
     print(f"Archivo MIDI guardado en: {archivo_salida}")
 
 # # Rutas de archivo
-# midi_file = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1.mid'  # Archivo MIDI de entrada
-# archivo_salida = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1_output.mid'  # Archivo MIDI de salida
+midi_file = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\waldstein_3.mid'  # Archivo MIDI de entrada
+# # archivo_salida = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1_output.mid'  # Archivo MIDI de salida
 
-# # Procesar el archivo MIDI
-# nombres, pitches, velocidades, duraciones, tempo_bpm = procesar_primera_pista(midi_file)
+# # # Procesar el archivo MIDI
+#nombres, pitches, velocidades, duraciones, tempo_bpm = procesar_primera_pista(midi_file)
 
 # # Guardar los datos procesados en un nuevo archivo MIDI con el tempo
 # guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm, archivo_salida)
