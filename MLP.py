@@ -5,6 +5,7 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 
 
+
 def crear_secuencias(midi_data, longitud_secuencia):
     X, y = [], []
     

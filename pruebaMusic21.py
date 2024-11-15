@@ -1,117 +1,107 @@
-from music21 import converter, chord, note, stream
+from music21 import converter, note, chord, stream, tempo
 
-# Función para descomponer el archivo MIDI en nombres de acordes/notas, números de pitch MIDI, velocidad y duración
-def descomponer_midi_en_acordes_y_notas(midi_file):
+# Función para procesar la primera pista de un archivo MIDI
+def procesar_primera_pista(midi_file):
+    """
+    Procesa la primera pista de un archivo MIDI, extrayendo notas, acordes, silencios y tempo.
+    
+    Args:
+        midi_file (str): Ruta al archivo MIDI que se desea procesar.
+    
+    Returns:
+        tuple: Contiene las listas de nombres, pitches, velocidades, duraciones y el tempo en BPM.
+    """
     # Cargar el archivo MIDI
     midi_data = converter.parse(midi_file)
     
-    # Obtener todas las pistas en el archivo MIDI
-    pistas = midi_data.getElementsByClass('Stream')
+    # Obtener el tempo del archivo MIDI (si está definido, se toma el primero encontrado)
+    tempos = midi_data.flat.getElementsByClass(tempo.MetronomeMark)
+    tempo_bpm = tempos[0].number if len(tempos) > 0 else 120  # Valor predeterminado: 120 BPM
     
-    # Listas para almacenar nombres, pitch, velocidad y duración
-    nombres_acordes_y_notas = []
-    numeros_pitch = []
-    velocidades = []
-    duraciones = []
+    # Seleccionar la primera pista del archivo MIDI
+    # Si tiene partes (tracks), selecciona la primera; si no, toma todo el archivo
+    primera_pista = midi_data.parts[0] if len(midi_data.parts) > 0 else midi_data
     
-    # Recorrer todas las pistas en el archivo
-    for pista in pistas:
-        # Listas temporales para los datos de cada pista
-        nombres_pista = []
-        pitches_pista = []
-        velocidades_pista = []
-        duraciones_pista = []
-        
-        # Recorrer todos los elementos de la pista en orden cronológico
-        for elemento in pista.flat:
-            # Si el elemento es un acorde
-            if isinstance(elemento, chord.Chord):
-                # Obtener los nombres, números de pitch y velocidades de las notas en el acorde
-                acorde_nombres = [n.nameWithOctave for n in elemento.notes]
-                acorde_pitches = [n.pitch.midi for n in elemento.notes if n.pitch is not None]
-                acorde_velocidades = [n.volume.velocity for n in elemento.notes if n.volume.velocity is not None]
-                
-                # Asegurarnos de que el pitch tenga siempre 5 elementos, completando con ceros si es necesario
-                while len(acorde_pitches) < 5:
-                    acorde_pitches.append(0)
-                acorde_pitches = acorde_pitches[:5]
-                
-                # Asegurarnos de que las velocidades también tengan 5 elementos
-                while len(acorde_velocidades) < 5:
-                    acorde_velocidades.append(0)
-                acorde_velocidades = acorde_velocidades[:5]
-                
-                # Guardar el nombre, pitch, velocidad y duración del acorde
-                nombres_pista.append(f"Acorde: {', '.join(acorde_nombres)}")
-                pitches_pista.append(acorde_pitches)
-                velocidades_pista.append(acorde_velocidades)
-                duraciones_pista.append(float(elemento.quarterLength))  # Convertir duración a float
-                
-            # Si el elemento es una nota individual
-            elif isinstance(elemento, note.Note):
-                # Guardar el nombre, pitch y velocidad de la nota
-                nombres_pista.append(elemento.nameWithOctave)
-                pitch_list = [elemento.pitch.midi] if elemento.pitch is not None else [0]
-                velocity = [elemento.volume.velocity if elemento.volume.velocity is not None else 0]
-                
-                # Asegurarnos de que pitch y velocidad tengan siempre 5 elementos
-                while len(pitch_list) < 5:
-                    pitch_list.append(0)
-                while len(velocity) < 5:
-                    velocity.append(0)
-                    
-                pitches_pista.append(pitch_list)
-                velocidades_pista.append(velocity)
-                duraciones_pista.append(float(elemento.quarterLength))  # Convertir duración a float
-        
-        # Añadir los datos de esta pista a las listas generales
-        nombres_acordes_y_notas.append(nombres_pista)
-        numeros_pitch.append(pitches_pista)
-        velocidades.append(velocidades_pista)
-        duraciones.append(duraciones_pista)
+    # Listas para almacenar los datos de la pista
+    nombres = []       # Nombres de las notas, acordes o silencios
+    pitches = []       # Alturas (pitches) en formato MIDI (notas numéricas)
+    velocidades = []   # Velocidades (volúmenes de las notas/acordes)
+    duraciones = []    # Duraciones de los elementos en "quarterLength" (unidad relativa a negras)
     
-    return nombres_acordes_y_notas, numeros_pitch, velocidades, duraciones
+    # Recorrer los elementos de la pista (notas, acordes, silencios)
+    for elemento in primera_pista.flat.notesAndRests:
+        if isinstance(elemento, chord.Chord):  # Si el elemento es un acorde
+            nombres.append(f"Acorde: {', '.join(n.nameWithOctave for n in elemento.notes)}")  # Nombres de las notas del acorde
+            pitches.append([n.pitch.midi for n in elemento.notes])  # Alturas de las notas
+            velocidades.append([n.volume.velocity or 0 for n in elemento.notes])  # Velocidades de cada nota
+            duraciones.append(elemento.quarterLength)  # Duración del acorde
+        elif isinstance(elemento, note.Note):  # Si el elemento es una nota
+            nombres.append(elemento.nameWithOctave)  # Nombre de la nota (con octava)
+            pitches.append([elemento.pitch.midi])  # Altura MIDI de la nota
+            velocidades.append([elemento.volume.velocity or 0])  # Velocidad de la nota
+            duraciones.append(elemento.quarterLength)  # Duración de la nota
+        elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
+            nombres.append("Silencio")  # Indica que es un silencio
+            pitches.append([0])  # Un silencio no tiene altura (pitch)
+            velocidades.append([0])  # Un silencio no tiene velocidad
+            duraciones.append(float(elemento.quarterLength))  # Duración del silencio
+    
+    # Retornar los datos procesados junto con el tempo
+    return nombres, pitches, velocidades, duraciones, tempo_bpm
 
-
-# Modificar la función para incluir un desplazamiento temporal
-def guardar_como_midi(nombres, pitches, velocidades, duraciones, archivo_salida):
-    nuevo_midi = stream.Score()
+# Función para guardar un nuevo archivo MIDI a partir de los datos procesados
+def guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm, archivo_salida):
+    """
+    Crea y guarda un nuevo archivo MIDI utilizando los datos procesados.
     
-    for i in range(len(nombres)):
-        nueva_pista = stream.Part()
-        
-        offset = 0.0  # Lleva la cuenta del tiempo en la pista
-        
-        for nombre, pitch, velocidad, duracion in zip(nombres[i], pitches[i], velocidades[i], duraciones[i]):
-            if isinstance(nombre, str) and 'Acorde' in nombre:
-                acorde = chord.Chord(pitch)
-                acorde.quarterLength = duracion
-                acorde.offset = offset  # Asigna el offset al acorde
-                nueva_pista.append(acorde)
-            else:
-                for p, v in zip(pitch, velocidad):
-                    if p != 0:
-                        n = note.Note(p)
-                        n.quarterLength = duracion
-                        n.offset = offset  # Asigna el offset a la nota
-                        nueva_pista.append(n)
-            
-            # Aumenta el offset según la duración de la última nota/acorde añadida
-            offset += duracion
-        
-        nuevo_midi.append(nueva_pista)
+    Args:
+        nombres (list): Lista con los nombres de notas/acordes/silencios.
+        pitches (list): Lista de alturas (en formato MIDI) para cada elemento.
+        velocidades (list): Lista de velocidades para cada elemento.
+        duraciones (list): Lista de duraciones (en quarterLength) para cada elemento.
+        tempo_bpm (float): Tempo en BPM a agregar al inicio del archivo.
+        archivo_salida (str): Ruta donde se guardará el nuevo archivo MIDI.
+    """
+    nuevo_stream = stream.Stream()  # Crear un nuevo stream para construir el MIDI
     
-    nuevo_midi.write('midi', fp=archivo_salida)
+    # Agregar el tempo al inicio del stream
+    marca_tempo = tempo.MetronomeMark(number=tempo_bpm)  # Crear la marca de tempo
+    nuevo_stream.append(marca_tempo)  # Agregar al stream
+    
+    offset = 0.0  # Posición inicial en tiempo
+    
+    # Recorrer los datos procesados para reconstruir el MIDI
+    for nombre, pitch, velocidad, duracion in zip(nombres, pitches, velocidades, duraciones):
+        if "Acorde" in nombre:  # Si es un acorde
+            acorde = chord.Chord(pitch)  # Crear un objeto Chord con las alturas MIDI
+            acorde.quarterLength = duracion  # Asignar la duración
+            acorde.offset = offset  # Establecer el tiempo inicial del acorde
+            nuevo_stream.append(acorde)  # Agregar el acorde al stream
+        elif "Silencio" in nombre:  # Si es un silencio
+            silencio = note.Rest()  # Crear un objeto Rest
+            silencio.quarterLength = duracion  # Asignar la duración
+            silencio.offset = offset  # Establecer el tiempo inicial del silencio
+            nuevo_stream.append(silencio)  # Agregar el silencio al stream
+        else:  # Si es una nota
+            for p, v in zip(pitch, velocidad):  # Recorrer cada nota (para soportar acordes simples)
+                if p != 0:  # Evitar procesar silencios
+                    n = note.Note(p)  # Crear un objeto Note con la altura MIDI
+                    n.quarterLength = duracion  # Asignar la duración
+                    n.offset = offset  # Establecer el tiempo inicial de la nota
+                    nuevo_stream.append(n)  # Agregar la nota al stream
+        
+        offset += duracion  # Avanzar el tiempo para el siguiente elemento
+    
+    # Guardar el stream en un archivo MIDI
+    nuevo_stream.write('midi', fp=archivo_salida)
     print(f"Archivo MIDI guardado en: {archivo_salida}")
 
+# Rutas de archivo
+midi_file = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1.mid'  # Archivo MIDI de entrada
+archivo_salida = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1_output.mid'  # Archivo MIDI de salida
 
-# Usar la función con tu archivo MIDI
-midi_file = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1.mid'
-archivo_salida = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1_output.mid'
+# Procesar el archivo MIDI
+nombres, pitches, velocidades, duraciones, tempo_bpm = procesar_primera_pista(midi_file)
 
-# Obtener los nombres de acordes/notas, números de pitch, velocidades y duraciones
-nombres_acordes_y_notas, numeros_pitch, velocidades, duraciones = descomponer_midi_en_acordes_y_notas(midi_file)
-
-# Guardar los datos en un nuevo archivo MIDI
-guardar_como_midi(nombres_acordes_y_notas, numeros_pitch, velocidades, duraciones, archivo_salida)
-
+# Guardar los datos procesados en un nuevo archivo MIDI con el tempo
+guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm, archivo_salida)
