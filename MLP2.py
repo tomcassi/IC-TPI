@@ -1,5 +1,6 @@
 from pruebaMusic21 import procesar_primera_pista
 from cargar_caracteristicas import cargarPista
+from crear_secuencias import crear_secuencia
 import os
 import copy
 
@@ -13,39 +14,21 @@ carpeta_audios = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1.mid'
 
 #Agarramos de a una cancion
 todos_caracteristicas = cargarPista(carpeta_audios)
-
 maximo_tamaño_acorde=5
-#Le hacemos el MLP
 
-x,y=[],[]
-pitch=[]
-velocidad=[]
-for i in range(len(todos_caracteristicas[0]) - secuencia_len):
-    # Crear una copia profunda para evitar modificar los datos originales
-    pitch_auxiliar = copy.deepcopy(todos_caracteristicas[0][i:i+secuencia_len])
-    velocidad_auxiliar = copy.deepcopy(todos_caracteristicas[1][i:i+secuencia_len])
-    
-    for j in range(len(pitch_auxiliar)):
-        while len(pitch_auxiliar[j]) < maximo_tamaño_acorde:
-            pitch_auxiliar[j].append(0)  # Agregar ceros al final de la sublista
-            
-        while len(velocidad_auxiliar[j]) < maximo_tamaño_acorde:
-            velocidad_auxiliar[j].append(0)  # Agregar ceros al final de la sublista
-            
-    pitch.append(pitch_auxiliar)
-    velocidad.append(velocidad_auxiliar)
-    
-    duracion = todos_caracteristicas[2][i:i+secuencia_len]
-    
-    y_auxiliar = todos_caracteristicas[0][i + secuencia_len]
-    x.append(pitch_auxiliar)
-    y.append(y_auxiliar)
+x,y = crear_secuencia(todos_caracteristicas,maximo_tamaño_acorde,secuencia_len)
 
     
 
-   
+x_aplanado = []
 
+# Suponiendo que x tiene 3 listas y quieres recorrer sus elementos
+for i in range(len(x[0])):  # Asumiendo que x[0], x[1], x[2] tienen la misma longitud
+    x_auxiliar = []  # Crear una lista vacía para almacenar los elementos en cada iteración
+    x_auxiliar.extend([x[0][i]])  # Agregar el elemento de x[0][i]
+    x_auxiliar.extend([x[1][i]])  # Agregar el elemento de x[1][i]
+    x_auxiliar.extend([x[2][i]])  # Agregar el elemento de x[2][i]
     
-    
-    
-    
+    x_aplanado.append(x_auxiliar)  # Agregar la lista auxiliar a la lista final
+
+
