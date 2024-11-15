@@ -62,7 +62,7 @@ def procesar_primera_pista(midi_file):
             duraciones.append(elemento.quarterLength)  # Duración de la nota
         elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
             nombres.append("Silencio")  # Indica que es un silencio
-            pitches.append([0])  # Un silencio no tiene altura (pitch)
+            pitches.append([-1])  # Un silencio no tiene altura (pitch)
             velocidades.append([0])  # Un silencio no tiene velocidad
             duraciones.append(float(elemento.quarterLength))  # Duración del silencio
 
