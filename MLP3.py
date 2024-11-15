@@ -144,9 +144,68 @@ def entrenar_modelo(X, y, mlp):
         
     return mlp, y_pred, y_test
 
+def predecir_sig_elem(elem_originales, modelo, cant_predicciones):
+    n_predicciones = 0
+    elementos = elem_originales
+    
+    
+    while n_predicciones < cant_predicciones:
+          
+        elem_input = np.array(elementos[n_predicciones:n_predicciones+len(elem_originales)]).reshape(1, -1)
+        print("Input para predicción:", elem_input)
+        
+        prediccion = modelo.predict(elem_input)
+        prediccion = prediccion[0]
+        print("Predicción:", prediccion)
+        
+        elementos.append(prediccion)
+        n_predicciones += 1
+    
+    return elementos
+
+from music21 import stream, note, chord
+
+def generar_cancion(pitches_conprediccion, velocities_conprediccion, durations_conprediccion):
+    # Crear una nueva secuencia de música
+    cancion = stream.Stream()
+
+    # Asegurarse de que las listas tengan el mismo tamaño
+    if len(pitches_conprediccion) == len(velocities_conprediccion) == len(durations_conprediccion):
+        for i in range(len(pitches_conprediccion)):
+            pitch = pitches_conprediccion[i]
+            velocity = velocities_conprediccion[i]
+            duration = durations_conprediccion[i]
+
+            # Si el pitch es -1, entonces es un silencio
+            if pitch == -1:
+                # Crear un silencio con la duración especificada
+                silencio = note.Rest(quarterLength=duration)
+                cancion.append(silencio)
+            # Si el pitch tiene más de una nota (acorde)
+            elif isinstance(pitch, list):
+                # Crear un acorde con las notas
+                notas = [note.Note(p, quarterLength=duration) for p in pitch]
+                for n in notas:
+                    n.volume.velocity = velocity
+                acord = chord.Chord(notas)
+                cancion.append(acord)
+            else:
+                # Crear una nota individual
+                n = note.Note(pitch, quarterLength=duration)
+                n.volume.velocity = velocity
+                cancion.append(n)
+
+    else:
+        print("Las listas de predicciones no tienen el mismo tamaño. No se puede generar la canción.")
+
+    return cancion
+
+
+
+
 
 if __name__ == "__main__":
-    longitud_secuencia = 5
+    longitud_secuencia = 20
     carpeta_audios = "Audios/"
     cargar_acordes_canciones(carpeta_audios)
 
@@ -184,7 +243,36 @@ if __name__ == "__main__":
         
         mlp_duration, y_pred, y_test = entrenar_modelo(X,y,mlp_duration)
         
-        
         y_test = np.array(y_test)
+    
+    
+    todos_caracteristicas = cargarPista("Audios/beethoven_opus90_2.mid")
+    for i, nota_acorde in enumerate(todos_caracteristicas[0]):
+        indice = notasyacordes.index(sorted(nota_acorde))
+        todos_caracteristicas[0][i] = indice
+    
+    cant_predicciones = 100
+    pitches_conprediccion = predecir_sig_elem(todos_caracteristicas[0][0:longitud_secuencia], mlp_pitch, cant_predicciones)
+    velocities_conprediccion = predecir_sig_elem(todos_caracteristicas[1][0:longitud_secuencia], mlp_velocity, cant_predicciones)
+    
+    durations_originales = todos_caracteristicas[2][0:longitud_secuencia]
+    
+    for i in range(len(durations_originales)):
+        durations_originales[i] *= 1000
+    
+    durations_conprediccion = predecir_sig_elem(durations_originales, mlp_duration, cant_predicciones)
+    
+    for i in range(len(durations_conprediccion)):
+        durations_conprediccion[i] /= 1000
+    
+    
+    for i in range(len(pitches_conprediccion)):
+        pitches_conprediccion[i] = notasyacordes[pitches_conprediccion[i]]
+            
+    cancion_generada = generar_cancion(pitches_conprediccion, velocities_conprediccion, durations_conprediccion)
 
+    # Guardar la canción en un archivo MIDI
+    cancion_generada.write('midi', fp='cancion_generada.mid')
+        
+        
 
