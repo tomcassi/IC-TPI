@@ -51,7 +51,7 @@ x,y = aplanar_secuencia (x,y)
 mlp = MLPClassifier(hidden_layer_sizes=(10), max_iter=1000)
 
 #mlp_entrenado = entrenar_modelo(x,y,mlp)
-X_train, X_test, y_train, y_test = train_test_split(x[0], y[0], test_size=0.05, shuffle=True)
+X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.05, shuffle=True)
 
     # Entrenar el modelo
 mlp.fit(X_train, y_train)
