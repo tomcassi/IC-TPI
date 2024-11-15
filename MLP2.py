@@ -1,8 +1,34 @@
 from pruebaMusic21 import procesar_primera_pista
 from cargar_caracteristicas import cargarPista
 from crear_secuencias import crear_secuencia
-import os
-import copy
+from crear_secuencias import aplanar_secuencia
+from sklearn.neural_network import MLPClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+
+
+
+def entrenar_modelo(X ,y, modelo1):
+    # Dividir el conjunto de datos en entrenamiento y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True)
+
+    # Entrenar el modelo
+    modelo1.fit(X_train, y_train)
+
+    # Hacer predicciones
+    y_pred = modelo1.predict(X_test)
+
+    # Evaluar la precisión del modelo
+    accuracy = accuracy_score(y_test, y_pred)
+    print("Precisión del modelo:", accuracy)
+
+  
+        
+    return mlp
+
+
+
 
 
 # Parámetros principales
@@ -19,16 +45,25 @@ maximo_tamaño_acorde=5
 x,y = crear_secuencia(todos_caracteristicas,maximo_tamaño_acorde,secuencia_len)
 
     
+x,y = aplanar_secuencia (x,y)
 
-x_aplanado = []
 
-# Suponiendo que x tiene 3 listas y quieres recorrer sus elementos
-for i in range(len(x[0])):  # Asumiendo que x[0], x[1], x[2] tienen la misma longitud
-    x_auxiliar = []  # Crear una lista vacía para almacenar los elementos en cada iteración
-    x_auxiliar.extend([x[0][i]])  # Agregar el elemento de x[0][i]
-    x_auxiliar.extend([x[1][i]])  # Agregar el elemento de x[1][i]
-    x_auxiliar.extend([x[2][i]])  # Agregar el elemento de x[2][i]
-    
-    x_aplanado.append(x_auxiliar)  # Agregar la lista auxiliar a la lista final
+mlp = MLPClassifier(hidden_layer_sizes=(10), max_iter=1000)
+
+#mlp_entrenado = entrenar_modelo(x,y,mlp)
+X_train, X_test, y_train, y_test = train_test_split(x[0], y[0], test_size=0.05, shuffle=True)
+
+    # Entrenar el modelo
+mlp.fit(X_train, y_train)
+
+    # Hacer predicciones
+y_pred = mlp.predict(X_test)
+
+    # Evaluar la precisión del modelo
+accuracy = accuracy_score(y_test, y_pred)
+print("Precisión del modelo:", accuracy)
+
+
+
 
 

@@ -48,3 +48,48 @@ def crear_secuencia(todos_caracteristicas,maximo_tamaño_acorde,secuencia_len):
         
     return x,y
 
+
+
+def aplanar_secuencia(x,y):
+    x_aplanado=[]
+    y_aplanado=[]
+
+    # Suponiendo que x tiene 3 listas y quieres recorrer sus elementos
+    for i in range(len(x[0])):  # Asumiendo que x[0], x[1], x[2] tienen la misma longitud
+        x_auxiliar = []  # Crear una lista vacía para almacenar los elementos en cada iteración
+        
+        
+        x_auxiliar.extend(x[0][i])  # Agregar todos los elementos de x[0][i] a x_auxiliar
+        x_auxiliar.extend(x[1][i])  # Agregar todos los elementos de x[1][i] a x_auxiliar
+        x_auxiliar.extend(x[2][i])  # Agregar todos los elementos de x[2][i] a x_auxiliar
+        
+        def aplanar(lista):
+            resultado = []
+            for elemento in lista:
+                if isinstance(elemento, list):
+                    resultado.extend(aplanar(elemento))
+                else:
+                    resultado.append(elemento)
+        
+            return resultado
+        
+        resultado=aplanar(x_auxiliar)
+        
+        x_aplanado.append(resultado)  # Agregar los elementos de x_auxiliar a la lista final (esto aplana la lista)
+        
+       ###### 
+        
+        y_auxiliar = []  # Crear una lista vacía para almacenar los elementos en cada iteración
+        
+        
+        y_auxiliar.extend(y[0][i])  # Agregar todos los elementos de x[0][i] a x_auxiliar
+        y_auxiliar.extend(y[1][i])  # Agregar todos los elementos de x[1][i] a x_auxiliar
+        y_auxiliar.append(y[2][i])  # Agregar todos los elementos de x[2][i] a x_auxiliar
+        
+        resultado=aplanar(y_auxiliar)
+        
+        y_aplanado.append(resultado)  # Agregar los elementos de x_auxiliar a la lista final (esto aplana la lista)
+    
+    return x_aplanado,y_aplanado
+
+
