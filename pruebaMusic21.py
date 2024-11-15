@@ -96,12 +96,12 @@ def guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm,
     nuevo_stream.write('midi', fp=archivo_salida)
     print(f"Archivo MIDI guardado en: {archivo_salida}")
 
-# Rutas de archivo
-midi_file = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1.mid'  # Archivo MIDI de entrada
-archivo_salida = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1_output.mid'  # Archivo MIDI de salida
+# # Rutas de archivo
+# midi_file = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1.mid'  # Archivo MIDI de entrada
+# archivo_salida = r'C:\Users\Rama\Desktop\b\IC-TPI\Audios\beethoven1_output.mid'  # Archivo MIDI de salida
 
-# Procesar el archivo MIDI
-nombres, pitches, velocidades, duraciones, tempo_bpm = procesar_primera_pista(midi_file)
+# # Procesar el archivo MIDI
+# nombres, pitches, velocidades, duraciones, tempo_bpm = procesar_primera_pista(midi_file)
 
-# Guardar los datos procesados en un nuevo archivo MIDI con el tempo
-guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm, archivo_salida)
+# # Guardar los datos procesados en un nuevo archivo MIDI con el tempo
+# guardar_midi_con_tempo(nombres, pitches, velocidades, duraciones, tempo_bpm, archivo_salida)
