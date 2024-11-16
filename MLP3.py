@@ -10,6 +10,8 @@ from sklearn.ensemble import RandomForestClassifier
 
 from mapaNotasAcordes import cargar_notas_acordes_canciones
 from procesarMidi import cargarPista, generar_cancion
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 
 
 
@@ -62,10 +64,19 @@ def predecir_sig_elem(elem_originales, modelo, cant_predicciones):
     
     return elementos
 
-def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes):
-    mlp_pitch = RandomForestClassifier(n_estimators=100)
-    mlp_velocity = RandomForestClassifier(n_estimators=100)
-    mlp_duration = RandomForestClassifier(n_estimators=100)
+def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_pieza):
+    mlp_pitch = LogisticRegression()
+    mlp_velocity = LogisticRegression()
+    mlp_duration = LogisticRegression()
+    
+    # mlp_pitch = KNeighborsClassifier(n_neighbors=3)
+    # mlp_velocity = KNeighborsClassifier(n_neighbors=3)
+    # mlp_duration = KNeighborsClassifier(n_neighbors=3)
+    
+    # mlp_pitch = RandomForestClassifier(n_estimators=100)
+    # mlp_velocity = RandomForestClassifier(n_estimators=100)
+    # mlp_duration = RandomForestClassifier(n_estimators=100)
+    
     # mlp_pitch = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
     # mlp_velocity = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
     # mlp_duration = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
@@ -75,7 +86,7 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes):
     for nombre_archivo in os.listdir(carpeta_audios):
         archivo_midi = os.path.join(carpeta_audios, nombre_archivo)
         
-        todos_caracteristicas = cargarPista(archivo_midi)
+        todos_caracteristicas = cargarPista(archivo_midi, nombre_pieza)
         for i, nota_acorde in enumerate(todos_caracteristicas[0]):
             indice = notasyacordes.index(sorted(nota_acorde))
             todos_caracteristicas[0][i] = indice
@@ -100,9 +111,9 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes):
     return mlp_pitch, mlp_velocity, mlp_duration
 
 
-def predecir_cancion(mlp_pitch, mlp_velocity, mlp_duration, longitud_secuencia, notasyacordes):
+def predecir_cancion(mlp_pitch, mlp_velocity, mlp_duration, longitud_secuencia, notasyacordes, cancion_inicial, nombre_pieza):
     #Predecir cancion:
-    todos_caracteristicas = cargarPista("Audios/waldstein_2.mid")
+    todos_caracteristicas = cargarPista(cancion_inicial, nombre_pieza)
     for i, nota_acorde in enumerate(todos_caracteristicas[0]):
         indice = notasyacordes.index(sorted(nota_acorde))
         todos_caracteristicas[0][i] = indice
@@ -133,15 +144,17 @@ def predecir_cancion(mlp_pitch, mlp_velocity, mlp_duration, longitud_secuencia, 
 if __name__ == "__main__":
     l_s = 20
     c_a = "Audios/"
+    cancion_a_continuar = "Audios/chpn-p16.mid"
     
-    mapa = cargar_notas_acordes_canciones(c_a)
+    mapa_right = cargar_notas_acordes_canciones(c_a, "piano right")
+    mapa_left = cargar_notas_acordes_canciones(c_a, "piano left")
     
-    mlp_p, mlp_v, mlp_d = inicializar_modelo(c_a,l_s, mapa)
+    mlp_p_r, mlp_v_r, mlp_d_r = inicializar_modelo(c_a,l_s, mapa_right, "piano right")
+    mlp_p_l, mlp_v_l, mlp_d_l = inicializar_modelo(c_a,l_s, mapa_left, "piano left")
     
-    p_conprediccion, v_conprediccion, d_conprediccion = predecir_cancion(mlp_p, mlp_v, mlp_d, l_s, mapa)
+    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(mlp_p_r, mlp_v_r, mlp_d_r, l_s, mapa_right, cancion_a_continuar, "piano right")
+    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(mlp_p_l, mlp_v_l, mlp_d_l, l_s, mapa_left, cancion_a_continuar, "piano left")
 
-            
-    cancion_generada = generar_cancion(p_conprediccion, v_conprediccion, d_conprediccion)
+    cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]])
+    cancion_generada.write('midi', fp='cancion_generada_.mid')
 
-    # Guardar la canción en un archivo MIDI
-    cancion_generada.write('midi', fp='cancion_generada.mid')

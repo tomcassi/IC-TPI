@@ -1,18 +1,19 @@
 import os
-from music21 import converter, instrument, chord
+from music21 import converter, chord
 
-def cargar_notas_acordes_canciones(carpeta_audios="Audios/"):
+def cargar_notas_acordes_canciones(carpeta_audios, nombre_pieza):
     notasyacordes = []
     for i in range(-1, 128):  # Corrige el rango para incluir -1 hasta 127
         notasyacordes.append([i])  # Agregar sublistas con el valor correspondiente
     
     print("\n=====Cargando acordes presentes en canciones=====")
     for nombre_archivo in os.listdir(carpeta_audios):
+        print(nombre_archivo)
         archivo_midi = os.path.join(carpeta_audios, nombre_archivo)
         
         try:
-            pitches = cargar_acordes(archivo_midi)
-            print(f'Archivo cargado: {archivo_midi}')
+            pitches = cargar_acordes(archivo_midi, nombre_pieza)
+            print(f'Acordes cargados de {nombre_pieza}: {archivo_midi}')
         except ValueError as e:
             print(e)
             continue
@@ -23,7 +24,7 @@ def cargar_notas_acordes_canciones(carpeta_audios="Audios/"):
     return notasyacordes
 
 
-def cargar_acordes(midi_file):
+def cargar_acordes(midi_file, nombre_pieza):
     # Cargar el archivo MIDI
     try:
         midi_data = converter.parse(midi_file)
@@ -34,18 +35,12 @@ def cargar_acordes(midi_file):
     piano_right = None
     for part in midi_data.parts:
         # Verificar si el nombre de la parte contiene "Piano Right"
-        if part.partName and "Piano right" in part.partName:
-            piano_right = part
-            break
-        # Alternativamente, verificar si el instrumento es Piano
-        elif any(isinstance(instr, instrument.Piano) for instr in part.getElementsByClass(instrument.Instrument)):
+        if part.partName and nombre_pieza in part.partName.lower():
             piano_right = part
             break
 
-    # Usar la primera pista si no se encuentra "Piano Right"
     if not piano_right:
-        print("No se encontró una parte etiquetada como 'Piano Right'. Usando la primera pista disponible.")
-        piano_right = midi_data.parts[0]
+        print("No se encontro "+ nombre_pieza)
 
     # Recoger los acordes (pitches)
     pitches = []
