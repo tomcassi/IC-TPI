@@ -1,13 +1,66 @@
-from cargarnotasyacordes import *
 import os
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import numpy as np
+from music21 import converter, tempo, chord, note, instrument
 
 
+def cargar_notas_acordes_canciones(carpeta_audios="Audios/"):
+    print("\n=====Cargando notas=====")
+    notasyacordes = []
+    for i in range(-1, 128):  # Corrige el rango para incluir -1 hasta 127
+        notasyacordes.append([i])  # Agregar sublistas con el valor correspondiente
+    
+    print("\n=====Cargando acordes presentes en canciones=====")
+    for nombre_archivo in os.listdir(carpeta_audios):
+        archivo_midi = os.path.join(carpeta_audios, nombre_archivo)
+        
+        try:
+            pitches = cargar_acordes(archivo_midi)
+            print(f'Archivo cargado: {archivo_midi}')
+        except ValueError as e:
+            print(e)
+            continue
+        
+        for pitch in pitches:
+            if pitch not in notasyacordes:
+                notasyacordes.append(pitch)
+    return notasyacordes
 
-errores = []  # Lista para almacenar los errores en cada época
+
+def cargar_acordes(midi_file):
+    # Cargar el archivo MIDI
+    try:
+        midi_data = converter.parse(midi_file)
+    except Exception as e:
+        raise ValueError(f"No se pudo cargar el archivo MIDI: {e}")
+
+    # Filtrar la parte de "Piano Right"
+    piano_right = None
+    for part in midi_data.parts:
+        # Verificar si el nombre de la parte contiene "Piano Right"
+        if part.partName and "Piano right" in part.partName:
+            piano_right = part
+            break
+        # Alternativamente, verificar si el instrumento es Piano
+        elif any(isinstance(instr, instrument.Piano) for instr in part.getElementsByClass(instrument.Instrument)):
+            piano_right = part
+            break
+
+    # Usar la primera pista si no se encuentra "Piano Right"
+    if not piano_right:
+        print("No se encontró una parte etiquetada como 'Piano Right'. Usando la primera pista disponible.")
+        piano_right = midi_data.parts[0]
+
+    # Recoger los acordes (pitches)
+    pitches = []
+    for elemento in piano_right.flat.notesAndRests:
+        if isinstance(elemento, chord.Chord):  # Si el elemento es un acorde
+            pitches.append(sorted([n.pitch.midi for n in elemento.notes]))  # Alturas de las notas, ordenadas
+    return pitches
+
+
 
 def procesar_primera_pista(midi_file):
     try:
@@ -85,35 +138,6 @@ def cargarPista (archivo_midi):
             
     return todos_caracteristicas
 
-
-
-def entrenar_modelo(X, y, modelo1):
-    # Dividir el conjunto de datos en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True, random_state=42)
-
-    # Entrenar el modelo
-    modelo1.fit(X_train, y_train)
-
-    # Hacer predicciones en el conjunto de prueba
-    y_pred = modelo1.predict(X_test)
-
-    for i in range(len(y_pred)):
-        for j in range(len(y_pred[i])-1):
-            y_pred=y_pred.astype(int)
-            if y_pred[i][j]<10:
-                y_pred[i][j]=0
-
-
-    # Evaluar el modelo usando el Error Cuadrático Medio (MSE)
-    mse = mean_squared_error(y_test, y_pred)
-    print("Error cuadrático medio (MSE):", mse)
-    
-    # Almacenar el error en la lista global
-    errores.append(mse)
-
-    
-
-    return modelo1, y_pred, y_test ,X_test
 
 def crear_secuencias(caracteristicas, longitud_secuencia):
     X, y = [], []
@@ -203,17 +227,16 @@ def generar_cancion(pitches_conprediccion, velocities_conprediccion, durations_c
 
 
 
-
 if __name__ == "__main__":
     longitud_secuencia = 20
     carpeta_audios = "Audios/"
-    cargar_acordes_canciones(carpeta_audios)
+    notasyacordes = cargar_notas_acordes_canciones(carpeta_audios)
 
     print("\n=====Cargando caracteristicas=====")
                 
-    mlp_pitch = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
-    mlp_velocity = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
-    mlp_duration = MLPClassifier(hidden_layer_sizes=(10,10), max_iter=10000)
+    mlp_pitch = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
+    mlp_velocity = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
+    mlp_duration = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
     
 
     for nombre_archivo in os.listdir(carpeta_audios):
@@ -246,7 +269,9 @@ if __name__ == "__main__":
         y_test = np.array(y_test)
     
     
-    todos_caracteristicas = cargarPista("Audios/beethoven_opus90_2.mid")
+    
+    #Predecir cancion:
+    todos_caracteristicas = cargarPista("Audios/mond_3.mid")
     for i, nota_acorde in enumerate(todos_caracteristicas[0]):
         indice = notasyacordes.index(sorted(nota_acorde))
         todos_caracteristicas[0][i] = indice
@@ -273,6 +298,3 @@ if __name__ == "__main__":
 
     # Guardar la canción en un archivo MIDI
     cancion_generada.write('midi', fp='cancion_generada.mid')
-        
-        
-
