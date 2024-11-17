@@ -59,55 +59,17 @@ def procesar_primera_pista(midi_file, nombre_pieza):
             pitches.append([elemento.pitch.midi])  # Altura MIDI de la nota
             velocidades.append(elemento.volume.velocity)  # Velocidad de la nota
             duraciones.append(elemento.quarterLength)  # Duración de la nota
-        elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
-            nombres.append("Silencio")  # Indica que es un silencio
-            pitches.append([-1])  # Un silencio no tiene altura (pitch)
-            velocidades.append(0)  # Un silencio no tiene velocidad
-            duraciones.append(float(elemento.quarterLength))  # Duración del silencio
+        # elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
+        #     nombres.append("Silencio")  # Indica que es un silencio
+        #     pitches.append([-1])  # Un silencio no tiene altura (pitch)
+        #     velocidades.append(0)  # Un silencio no tiene velocidad
+        #     duraciones.append(float(elemento.quarterLength))  # Duración del silencio
 
     # Retornar los datos procesados junto con el tempo
     return nombres, pitches, velocidades, duraciones, tempo_bpm
 
 
-# def generar_cancion(pitches_conprediccion, velocities_conprediccion, durations_conprediccion):
-#     # Crear una nueva secuencia de música
-#     cancion = stream.Stream()
-
-#     # Asegurarse de que las listas tengan el mismo tamaño
-#     if len(pitches_conprediccion) == len(velocities_conprediccion) == len(durations_conprediccion):
-#         for i in range(len(pitches_conprediccion)):
-#             pitch = pitches_conprediccion[i]
-#             velocity = velocities_conprediccion[i]
-#             duration = durations_conprediccion[i]
-
-#             # Si el pitch es -1, entonces es un silencio
-#             if pitch == -1:
-#                 # Crear un silencio con la duración especificada
-#                 silencio = note.Rest(quarterLength=duration)
-#                 cancion.append(silencio)
-#             # Si el pitch tiene más de una nota (acorde)
-#             elif isinstance(pitch, list):
-#                 # Crear un acorde con las notas
-#                 notas = [note.Note(p, quarterLength=duration) for p in pitch]
-#                 for n in notas:
-#                     n.volume.velocity = velocity
-#                 acord = chord.Chord(notas)
-#                 cancion.append(acord)
-#             else:
-#                 # Crear una nota individual
-#                 n = note.Note(pitch, quarterLength=duration)
-#                 n.volume.velocity = velocity
-#                 cancion.append(n)
-
-#     else:
-#         print("Las listas de predicciones no tienen el mismo tamaño. No se puede generar la canción.")
-
-#     return cancion
-
-
-def generar_cancion(lista_de_canales):
-    from music21 import stream, note, chord, instrument
-
+def generar_cancion(lista_de_canales, tempo_bpm=120):
     # Crear una nueva secuencia de música para la canción completa
     cancion = stream.Score()
 
@@ -119,6 +81,10 @@ def generar_cancion(lista_de_canales):
     piano_left = stream.Part()
     piano_left.insert(0, instrument.Piano())
     piano_left.partName = "Piano Left"
+
+    # Establecer el tempo de la canción
+    tempo_indicacion = tempo.MetronomeMark(number=tempo_bpm)
+    cancion.insert(0, tempo_indicacion)
 
     # Iterar sobre los canales (se espera una lista de listas, una para cada canal)
     for canal_idx, canal in enumerate(lista_de_canales):
@@ -163,4 +129,5 @@ def generar_cancion(lista_de_canales):
     cancion.append(piano_left)
 
     return cancion
+
 

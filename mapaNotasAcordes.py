@@ -3,8 +3,11 @@ from music21 import converter, chord
 
 def cargar_notas_acordes_canciones(carpeta_audios, nombre_pieza):
     notasyacordes = []
-    for i in range(-1, 128):  # Corrige el rango para incluir -1 hasta 127
+    # for i in range(-1, 128):  # Corrige el rango para incluir -1 hasta 127
+    #     notasyacordes.append([i])  # Agregar sublistas con el valor correspondiente
+    for i in range(0, 128):  # Corrige el rango para incluir -1 hasta 127
         notasyacordes.append([i])  # Agregar sublistas con el valor correspondiente
+    
     
     print("\n=====Cargando acordes presentes en canciones=====")
     for nombre_archivo in os.listdir(carpeta_audios):
