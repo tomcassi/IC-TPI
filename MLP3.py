@@ -114,36 +114,45 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
 def predecir_cancion(mlp_pitch, mlp_velocity, mlp_duration, longitud_secuencia, notasyacordes, cancion_inicial, nombre_pieza, cant_predicciones):
     #Predecir cancion:
     todos_caracteristicas = cargarPista(cancion_inicial, nombre_pieza)
+    
+    
+    #===== Para pitch =====
+    #transformo en indice de mapa:
     for i, nota_acorde in enumerate(todos_caracteristicas[0]):
         indice = notasyacordes.index(sorted(nota_acorde))
         todos_caracteristicas[0][i] = indice
     
+    #predigo elementos:
+    print("\n====Prediccion de Pitches====")
     pitches_conprediccion = predecir_sig_elem(todos_caracteristicas[0][0:longitud_secuencia], mlp_pitch, cant_predicciones)
-    velocities_conprediccion = predecir_sig_elem(todos_caracteristicas[1][0:longitud_secuencia], mlp_velocity, cant_predicciones)
-    
-    durations_originales = todos_caracteristicas[2][0:longitud_secuencia]
-    
-    for i in range(len(durations_originales)):
-        durations_originales[i] *= 1000
-    
-    durations_conprediccion = predecir_sig_elem(durations_originales, mlp_duration, cant_predicciones)
-    
-    for i in range(len(durations_conprediccion)):
-        durations_conprediccion[i] /= 1000
-    
-    
+    #vuelvo a transformar de indice a notas y acordes
     for i in range(len(pitches_conprediccion)):
         pitches_conprediccion[i] = notasyacordes[pitches_conprediccion[i]]
+    
+    
+    #===== Para velocities =====
+    print("\n====Prediccion de Velocities====")
+    velocities_conprediccion = predecir_sig_elem(todos_caracteristicas[1][0:longitud_secuencia], mlp_velocity, cant_predicciones)
+    
+    #===== Para durations =====
+    print("\n====Prediccion de Durations====")
+    #multiplico por 1000 y transformo en enteros
+    durations_originales = todos_caracteristicas[2][0:longitud_secuencia]
+    for i in range(len(durations_originales)):
+        durations_originales[i] *= 1000
+    durations_conprediccion = predecir_sig_elem(durations_originales, mlp_duration, cant_predicciones)
+    for i in range(len(durations_conprediccion)):
+        durations_conprediccion[i] /= 1000
+
     return pitches_conprediccion, velocities_conprediccion, durations_conprediccion
 
-def getTempo(midi_file):
-    from music21 import converter, tempo
 
+def getTempo(midi_file):
     # Cargar el archivo MIDI
     midi_data = converter.parse(midi_file)
 
     # Obtener todos los objetos de tipo MetronomeMark (tempo)
-    tempos = midi_data.flat.getElementsByClass(tempo.MetronomeMark)
+    tempos = midi_data.flatten().getElementsByClass(tempo.MetronomeMark)
 
     # Si hay tempos definidos, devolver el primero; de lo contrario, usar un valor por defecto de 120 BPM
     tempo_bpm = tempos[0].number if len(tempos) > 0 else 120
@@ -153,23 +162,26 @@ def getTempo(midi_file):
 
 
 if __name__ == "__main__":
+    from IPython import get_ipython
+    get_ipython().magic('clear')
+    
     l_s = 20
     c_a = "Audios/"
-    cancion_a_continuar = "Audios/mond_3.mid"
-    cant_predicciones = 100
+    cancion_a_continuar = "Audios/Nintendo_-_Pokemon_Fire_Red_Route_1_Piano_Cover_Hard_Version.mid"
+    cant_predicciones = 500
+    nombre_pista1 = "piano right"
+    nombre_pista2 = "piano left"
     
     tempo_bpm = getTempo(cancion_a_continuar)
-    print(tempo_bpm) ##CORREGIR ESTO QUE DA MALLL
     
+    print("\n=====Cargando acordes presentes en canciones=====")
+    mapa_right, mapa_left = cargar_notas_acordes_canciones(c_a,nombre_pista1, nombre_pista2)
     
-    mapa_right = cargar_notas_acordes_canciones(c_a, "piano right")
-    mapa_left = cargar_notas_acordes_canciones(c_a, "piano left")
+    mlp_p_r, mlp_v_r, mlp_d_r = inicializar_modelo(c_a,l_s, mapa_right, nombre_pista1)
+    mlp_p_l, mlp_v_l, mlp_d_l = inicializar_modelo(c_a,l_s, mapa_left, nombre_pista2)
     
-    mlp_p_r, mlp_v_r, mlp_d_r = inicializar_modelo(c_a,l_s, mapa_right, "piano right")
-    mlp_p_l, mlp_v_l, mlp_d_l = inicializar_modelo(c_a,l_s, mapa_left, "piano left")
-    
-    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(mlp_p_r, mlp_v_r, mlp_d_r, l_s, mapa_right, cancion_a_continuar, "piano right", cant_predicciones)
-    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(mlp_p_l, mlp_v_l, mlp_d_l, l_s, mapa_left, cancion_a_continuar, "piano left", cant_predicciones)
+    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(mlp_p_r, mlp_v_r, mlp_d_r, l_s, mapa_right, cancion_a_continuar, nombre_pista1, cant_predicciones)
+    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(mlp_p_l, mlp_v_l, mlp_d_l, l_s, mapa_left, cancion_a_continuar, nombre_pista2, cant_predicciones)
 
     cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm)
     cancion_generada.write('midi', fp='cancion_generada.mid')

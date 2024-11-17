@@ -1,4 +1,5 @@
 from music21 import converter, tempo, chord, note, instrument, stream
+import sys
 
 def cargarPista (archivo_midi, nombre_pieza):
     # Listas grandes para almacenar todos los datos de los archivos MIDI
@@ -23,7 +24,7 @@ def procesar_primera_pista(midi_file, nombre_pieza):
         raise ValueError(f"No se pudo cargar el archivo MIDI: {e}")
 
     # Obtener el tempo del archivo MIDI (si está definido, se toma el primero encontrado)
-    tempos = midi_data.flat.getElementsByClass(tempo.MetronomeMark)
+    tempos = midi_data.flatten().getElementsByClass(tempo.MetronomeMark)
     tempo_bpm = tempos[0].number if len(tempos) > 0 else 120  # Valor predeterminado: 120 BPM
 
     # Filtrar la parte de "Piano Right"
@@ -38,7 +39,8 @@ def procesar_primera_pista(midi_file, nombre_pieza):
     if parte:
         print(f"Parte {nombre_pieza} encontrada.")
     else:
-        print(f"No se encontró una parte etiquetada como {nombre_pieza}.")
+        print(f"No se encontró una parte etiquetada como {nombre_pieza} en {midi_file}.")
+        sys.exit(0)
 
     # Listas para almacenar los datos de la pista
     nombres = []       # Nombres de las notas, acordes o silencios
@@ -47,7 +49,7 @@ def procesar_primera_pista(midi_file, nombre_pieza):
     duraciones = []    # Duraciones de los elementos en "quarterLength" (unidad relativa a negras)
 
     # Recorrer los elementos de la pista (notas, acordes, silencios)
-    for elemento in parte.flat.notesAndRests:
+    for elemento in parte.flatten().notesAndRests:
         if isinstance(elemento, chord.Chord):  # Si el elemento es un acorde
             nombres.append(f"Acorde: {', '.join(n.nameWithOctave for n in elemento.notes)}")  # Nombres de las notas del acorde
             pitches.append([n.pitch.midi for n in elemento.notes])  # Alturas de las notas
