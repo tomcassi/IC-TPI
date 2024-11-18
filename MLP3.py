@@ -38,10 +38,6 @@ def entrenar_modelo(X, y, mlp):
 
     # Hacer predicciones
     y_pred = mlp.predict(X_test)
-
-    # Evaluar la precisión del modelo
-    accuracy = accuracy_score(y_test, y_pred)
-    print("Precisión del modelo:", accuracy)
         
     return mlp, y_pred, y_test
 
@@ -73,9 +69,9 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
     # mlp_velocity = KNeighborsClassifier(n_neighbors=3)
     # mlp_duration = KNeighborsClassifier(n_neighbors=3)
     
-    mlp_pitch = RandomForestClassifier(n_estimators=100)
-    mlp_velocity = RandomForestClassifier(n_estimators=100)
-    mlp_duration = RandomForestClassifier(n_estimators=100)
+    mlp_pitch = RandomForestClassifier(n_estimators=10)
+    mlp_velocity = RandomForestClassifier(n_estimators=10)
+    mlp_duration = RandomForestClassifier(n_estimators=10)
     
     # mlp_pitch = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
     # mlp_velocity = MLPClassifier(hidden_layer_sizes=(100,100), max_iter=10000)
@@ -94,10 +90,12 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
         X,y = crear_secuencias(todos_caracteristicas[0],longitud_secuencia)
         
         mlp_pitch, y_pred, y_test = entrenar_modelo(X,y,mlp_pitch)
+        print("Precision pitch: "+str(accuracy_score(y_pred,y_test)))
         
         X,y = crear_secuencias(todos_caracteristicas[1],longitud_secuencia)
         
         mlp_velocity, y_pred, y_test = entrenar_modelo(X,y,mlp_velocity)
+        print("Precision velocity: "+str(accuracy_score(y_pred,y_test)))
         
         X,y = crear_secuencias(todos_caracteristicas[2],longitud_secuencia)
         # Multiplicar cada valor dentro de X por 100 y convertir a int
@@ -107,6 +105,7 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
         y = [int(valor * 1000) for valor in y]
         
         mlp_duration, y_pred, y_test = entrenar_modelo(X,y,mlp_duration)
+        print("Precision duration: "+str(accuracy_score(y_pred,y_test)))
         
     return mlp_pitch, mlp_velocity, mlp_duration
 
@@ -162,17 +161,17 @@ def getTempo(midi_file):
 
 
 if __name__ == "__main__":
-    from IPython import get_ipython
-    get_ipython().magic('clear')
+    # from IPython import get_ipython
+    # get_ipython().magic('clear')
     
     l_s = 20
     c_a = "Audios/"
-    cancion_a_continuar = "Audios/Nintendo_-_Pokemon_Fire_Red_Route_1_Piano_Cover_Hard_Version.mid"
+    
     cant_predicciones = 500
     nombre_pista1 = "piano right"
     nombre_pista2 = "piano left"
     
-    tempo_bpm = getTempo(cancion_a_continuar)
+    cancion_a_continuar = "waldstein_3.mid"
     
     print("\n=====Cargando acordes presentes en canciones=====")
     mapa_right, mapa_left = cargar_notas_acordes_canciones(c_a,nombre_pista1, nombre_pista2)
@@ -180,14 +179,41 @@ if __name__ == "__main__":
     mlp_p_r, mlp_v_r, mlp_d_r = inicializar_modelo(c_a,l_s, mapa_right, nombre_pista1)
     mlp_p_l, mlp_v_l, mlp_d_l = inicializar_modelo(c_a,l_s, mapa_left, nombre_pista2)
     
-    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(mlp_p_r, mlp_v_r, mlp_d_r, l_s, mapa_right, cancion_a_continuar, nombre_pista1, cant_predicciones)
-    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(mlp_p_l, mlp_v_l, mlp_d_l, l_s, mapa_left, cancion_a_continuar, nombre_pista2, cant_predicciones)
-
+    
+    #Comentar/descomentar para una sola cancion:
+    path_cancion_a_continuar = os.path.join(c_a, cancion_a_continuar)
+    tempo_bpm = getTempo(path_cancion_a_continuar)
+        
+    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(mlp_p_r, mlp_v_r, mlp_d_r, l_s, mapa_right, path_cancion_a_continuar, nombre_pista1, cant_predicciones)
+    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(mlp_p_l, mlp_v_l, mlp_d_l, l_s, mapa_left, path_cancion_a_continuar, nombre_pista2, cant_predicciones)
+    
     cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm)
-    cancion_generada.write('midi', fp='cancion_generada.mid')
+    path_cancion_generada = os.path.join("Ejemplos/", cancion_a_continuar)
+    cancion_generada.write('midi', fp=path_cancion_generada)
     
     fragmento = generar_cancion([[p_conprediccion_r[0:l_s], v_conprediccion_r[0:l_s], d_conprediccion_r[0:l_s]],[p_conprediccion_l[0:l_s], v_conprediccion_l[0:l_s], d_conprediccion_l[0:l_s]]], tempo_bpm)
-    fragmento.write('midi', fp='fragmento.mid')
+    path_fragmento = os.path.join("Ejemplos/", cancion_a_continuar.replace('.mid', '_fragmento.mid'))
+    fragmento.write('midi', fp=path_fragmento)
+        
+    
+    #comentar/descomentar para todas las canciones
+    
+    # for cancion in os.listdir(c_a):
+    #     cancion_a_continuar = cancion
+    #     path_cancion_a_continuar = os.path.join(c_a, cancion_a_continuar)
+        
+    #     tempo_bpm = getTempo(path_cancion_a_continuar)
+        
+    #     p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(mlp_p_r, mlp_v_r, mlp_d_r, l_s, mapa_right, path_cancion_a_continuar, nombre_pista1, cant_predicciones)
+    #     p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(mlp_p_l, mlp_v_l, mlp_d_l, l_s, mapa_left, path_cancion_a_continuar, nombre_pista2, cant_predicciones)
+
+    #     cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm)
+    #     path_cancion_generada = os.path.join("Ejemplos/", cancion_a_continuar)
+    #     cancion_generada.write('midi', fp=path_cancion_generada)
+        
+    #     fragmento = generar_cancion([[p_conprediccion_r[0:l_s], v_conprediccion_r[0:l_s], d_conprediccion_r[0:l_s]],[p_conprediccion_l[0:l_s], v_conprediccion_l[0:l_s], d_conprediccion_l[0:l_s]]], tempo_bpm)
+    #     path_fragmento = os.path.join("Ejemplos/", cancion_a_continuar.replace('.mid', '_fragmento.mid'))
+    #     fragmento.write('midi', fp=path_fragmento)
     
     
 
