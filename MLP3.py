@@ -167,11 +167,11 @@ if __name__ == "__main__":
     l_s = 20
     c_a = "Audios/"
     
-    cant_predicciones = 500
+    cant_predicciones = 200
     nombre_pista1 = "piano right"
     nombre_pista2 = "piano left"
     
-    cancion_a_continuar = "waldstein_3.mid"
+    cancion_a_continuar = "elise.mid"
     
     print("\n=====Cargando acordes presentes en canciones=====")
     mapa_right, mapa_left = cargar_notas_acordes_canciones(c_a,nombre_pista1, nombre_pista2)
