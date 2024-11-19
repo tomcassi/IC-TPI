@@ -1,0 +1,23 @@
+100 epocas
+
+ 
+    # # Crear el modelo LSTM config 2
+    # lstm_pitch = Sequential([
+    #      Input(shape=(longitud_secuencia, 1)),
+    #      LSTM(128, return_sequences=True),  # Reducimos el tamaño para evitar sobreajuste
+    #      Dropout(0.3),
+    #      LSTM(128),
+    #      Dense(128, activation='relu'),
+    #      Dropout(0.3),
+    #      Dense(len(notasyacordes), 
+    #      activation='softmax')
+    #  ])
+    # lstm_pitch.compile(loss='categorical_crossentropy', optimizer='adam')
+	  
+    rf_velocity = RandomForestClassifier(n_estimators=100)
+    rf_duration = RandomForestClassifier(n_estimators=100)
+ 
+ 
+ 50 epocas
+ 
+ Secuencias de 20
