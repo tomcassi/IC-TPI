@@ -1,4 +1,3 @@
-100 epocas
 
   lstm_pitch = Sequential([  # Usamos un modelo secuencial para construir la red paso a paso
         Input(shape=(longitud_secuencia, 1)),  # Capa de entrada, espera una secuencia de longitud `longitud_secuencia` y 1 característica por paso temporal
