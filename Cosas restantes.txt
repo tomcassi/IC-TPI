@@ -1,0 +1,3 @@
+Comparacion entre todos los modelos - Puede formar exactamente la cancion desde el fragmento inicial cada modelo?
+Comparacion con ayuda externa para la generacion de una nueva cancion - Tiene sentido esta generacion? Sigue los patrones del fragmento inicial? suena bien?
+Comparacion interna con estadistica para la generacion de una nueva cancion - Sigue la misma media y varianza que el fragmento inicial?

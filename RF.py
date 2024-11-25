@@ -7,9 +7,9 @@ from sklearn.ensemble import RandomForestClassifier
 
 
 from mapaNotasAcordes import cargar_notas_acordes_canciones
-from procesarMidi import cargarPista, generar_cancion,getTempo ,crear_secuencias
+from procesarMidi import cargarPista, generar_cancion,getTempo ,crear_secuencias,getTimeSignature,calcular_longitud_secuencia
 
-
+from sklearn.neighbors import KNeighborsClassifier
 
 
 
@@ -39,11 +39,11 @@ def predecir_sig_elem_rf(elem_originales, modelo, cant_predicciones):
     while n_predicciones < cant_predicciones:
           
         elem_input = np.array(elementos[n_predicciones:n_predicciones+len(elem_originales)]).reshape(1, -1)
-        print("Input para predicción:", elem_input)
+       # print("Input para predicción:", elem_input)
         
         prediccion = modelo.predict(elem_input)
         prediccion = prediccion[0]
-        print("Predicción:", prediccion)
+       # print("Predicción:", prediccion)
         
         elementos.append(prediccion)
         n_predicciones += 1
@@ -52,11 +52,42 @@ def predecir_sig_elem_rf(elem_originales, modelo, cant_predicciones):
 
 def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_pieza):
 
+        
+    rf_pitch = RandomForestClassifier(
+        n_estimators=500,       # Suficientes árboles para estabilidad
+        max_depth=None,         # Permitir árboles sin límite de profundidad
+        min_samples_split=2,    # Configuración estándar para divisiones
+        min_samples_leaf=1,     # Configuración estándar para flexibilidad
+        
+       
+    )
+
+
+
+    rf_velocity = RandomForestClassifier(
+        n_estimators=100,       # Suficientes árboles para estabilidad
+        max_depth=None,         # Permitir árboles sin límite de profundidad
+        min_samples_split=6,    # Configuración estándar para divisiones
+        min_samples_leaf=3,     # Configuración estándar para flexibilidad
+             
+       
+       
+    )
     
-    rf_pitch = RandomForestClassifier(n_estimators=100)
-    rf_velocity = RandomForestClassifier(n_estimators=100)
-    rf_duration = RandomForestClassifier(n_estimators=100)
+    rf_duration = RandomForestClassifier(
+        n_estimators=10,       # Suficientes árboles para estabilidad
+        max_depth=None,         # Permitir árboles sin límite de profundidad
+        min_samples_split=2,    # Configuración estándar para divisiones
+        min_samples_leaf=1,     # Configuración estándar para flexibilidad
+       
+       
+    )
     
+    
+
+
+        
+
     
     
     print("\n=====Cargando caracteristicas=====")
@@ -85,6 +116,10 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
         y = [int(valor * 1000) for valor in y]
         
         rf_duration, y_pred, y_test = entrenar_modelo_rf(X,y,rf_duration)
+        
+        
+    
+        
         
     return rf_pitch, rf_velocity, rf_duration
 
@@ -131,35 +166,57 @@ if __name__ == "__main__":
     from IPython import get_ipython
     get_ipython().magic('clear')
     
-    l_s = 20
-    c_a = "Audios2/"
-    cancion_a_continuar = "Audios2/figaro.mid"
-    cant_predicciones = 200
+    #Segundos que se van a tomar para tomar secuencia
+    tiempo_secuencia=10
+    tiempo_a_predecir= 60
+    
+    c_a = "Audios/"
+    cancion_a_continuar = "Audios/figaro.mid"
+    
+    
+
     nombre_pista1 = "right"
     nombre_pista2 = "left"
     
     
-    # #Si haces Audios
+    # # #Si haces Audios
     # nombre_pista1 = "piano right"
     # nombre_pista2 = "piano left"
     
     
+    l_s_r,l_s_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_secuencia,nombre_pista1,nombre_pista2)
+    
     tempo_bpm = getTempo(cancion_a_continuar)
+    firma_de_compas = getTimeSignature(cancion_a_continuar)
+
+
+    cant_predicciones_r,cant_predicciones_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_a_predecir,nombre_pista1,nombre_pista2)
+ 
+    
+
+
     
     print("\n=====Cargando acordes presentes en canciones=====")
     mapa_right, mapa_left = cargar_notas_acordes_canciones(c_a,nombre_pista1, nombre_pista2)
     
-    rf_p_r, rf_v_r, rf_d_r = inicializar_modelo(c_a,l_s, mapa_right, nombre_pista1)
-    rf_p_l, rf_v_l, rf_d_l = inicializar_modelo(c_a,l_s, mapa_left, nombre_pista2)
+    rf_p_r, rf_v_r, rf_d_r = inicializar_modelo(c_a,l_s_r, mapa_right, nombre_pista1)
+    rf_p_l, rf_v_l, rf_d_l = inicializar_modelo(c_a,l_s_l, mapa_left, nombre_pista2)
     
-    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(rf_p_r, rf_v_r, rf_d_r, l_s, mapa_right, cancion_a_continuar, nombre_pista1, cant_predicciones)
-    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(rf_p_l, rf_v_l, rf_d_l, l_s, mapa_left, cancion_a_continuar, nombre_pista2, cant_predicciones)
+    p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(rf_p_r, rf_v_r, rf_d_r, l_s_r, mapa_right, cancion_a_continuar, nombre_pista1, cant_predicciones_r)
+    p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(rf_p_l, rf_v_l, rf_d_l, l_s_l, mapa_left, cancion_a_continuar, nombre_pista2, cant_predicciones_l)
 
-    cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm)
-    cancion_generada.write('midi', fp='cancion_generada_rf.mid')
+    cancion_nombre= 'cancion_generada_rf.mid'
+    cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm,firma_de_compas,cancion_nombre)
+    #cancion_generada.write('midi', fp='cancion_generada_rf.mid')
     
-    fragmento = generar_cancion([[p_conprediccion_r[0:l_s], v_conprediccion_r[0:l_s], d_conprediccion_r[0:l_s]],[p_conprediccion_l[0:l_s], v_conprediccion_l[0:l_s], d_conprediccion_l[0:l_s]]], tempo_bpm)
-    fragmento.write('midi', fp='fragmento.mid')
+    fragmento_nombre='fragmento_rf.mid'
+    fragmento = generar_cancion([[p_conprediccion_r[0:l_s_r], v_conprediccion_r[0:l_s_r], d_conprediccion_r[0:l_s_r]],[p_conprediccion_l[0:l_s_l], v_conprediccion_l[0:l_s_l], d_conprediccion_l[0:l_s_l]]], tempo_bpm,firma_de_compas,fragmento_nombre)
+   
+    
+   
+    
+   
+    #fragmento.write('midi', fp='fragmento.mid')
     
         
     # ##comentar/descomentar para todas las canciones
