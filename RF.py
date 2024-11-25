@@ -68,12 +68,6 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
     )
     
     
-
-
-        
-
-    
-    
     print("\n=====Cargando caracteristicas=====")
     
     for nombre_archivo in os.listdir(carpeta_audios):
@@ -155,7 +149,9 @@ if __name__ == "__main__":
     tiempo_a_predecir= 60
     
     c_a = "Audios/"
-    cancion_a_continuar = "Audios/elise.mid"
+
+    cancion_a_continuar = "Audios/pk4.mid"
+
     
     
 
