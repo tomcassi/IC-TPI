@@ -54,33 +54,17 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
 
         
     rf_pitch = RandomForestClassifier(
-        n_estimators=500,       # Suficientes árboles para estabilidad
-        max_depth=None,         # Permitir árboles sin límite de profundidad
-        min_samples_split=2,    # Configuración estándar para divisiones
-        min_samples_leaf=1,     # Configuración estándar para flexibilidad
-        
-       
+        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
     )
 
 
 
     rf_velocity = RandomForestClassifier(
-        n_estimators=100,       # Suficientes árboles para estabilidad
-        max_depth=None,         # Permitir árboles sin límite de profundidad
-        min_samples_split=6,    # Configuración estándar para divisiones
-        min_samples_leaf=3,     # Configuración estándar para flexibilidad
-             
-       
-       
+        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
     )
     
     rf_duration = RandomForestClassifier(
-        n_estimators=10,       # Suficientes árboles para estabilidad
-        max_depth=None,         # Permitir árboles sin límite de profundidad
-        min_samples_split=2,    # Configuración estándar para divisiones
-        min_samples_leaf=1,     # Configuración estándar para flexibilidad
-       
-       
+        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
     )
     
     
@@ -171,7 +155,7 @@ if __name__ == "__main__":
     tiempo_a_predecir= 60
     
     c_a = "Audios/"
-    cancion_a_continuar = "Audios/figaro.mid"
+    cancion_a_continuar = "Audios/elise.mid"
     
     
 
