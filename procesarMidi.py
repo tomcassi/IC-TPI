@@ -186,18 +186,7 @@ from music21 import converter, note, stream
 from music21 import converter, meter
 
 def calcular_longitud_secuencia(path_cancion, duracion_en_segundos,nombre_pieza1,nombre_pieza2):
-    """
-    Calcula cuántos elementos (notas, acordes o silencios) hay en la partitura
-    dentro de un intervalo de tiempo dado, por separado para Piano Right y Piano Left.
 
-    Parámetros:
-        path_cancion (str): La ruta del archivo de la canción (MIDI, MusicXML, etc.).
-        duracion_en_segundos (float): La duración en segundos para analizar.
-
-    Retorna:
-        list: Un vector con dos valores: el primero es el número de elementos para Piano Right, 
-              y el segundo es el número de elementos para Piano Left.
-    """
     # Cargar la partitura desde el archivo
     partitura = converter.parse(path_cancion)
 
@@ -230,10 +219,6 @@ def calcular_longitud_secuencia(path_cancion, duracion_en_segundos,nombre_pieza1
 
     # Devolver un vector con los resultados
     return [cuenta_piano_right, cuenta_piano_left]
-
-
-
-
 
 
 
