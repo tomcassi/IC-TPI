@@ -20,21 +20,17 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 def entrenar_modelo_rf(X, y, rf):
-    # Dividir el conjunto de datos en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True)
-
-
     # Entrenar el modelo
-    rf.fit(X_train, y_train)
+    rf.fit(X, y)
 
     # Hacer predicciones
-    y_pred = rf.predict(X_test)
+    y_pred = rf.predict(X)
 
     # Evaluar la precisión del modelo
-    accuracy = accuracy_score(y_test, y_pred)
+    accuracy = accuracy_score(y, y_pred)
     print("Precisión del modelo:", accuracy)
         
-    return rf, y_pred, y_test
+    return rf, y_pred, y
 
 
 def predecir_sig_elem_rf(elem_originales, modelo, cant_predicciones):
@@ -63,49 +59,49 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
     modelos = {
     # Variaciones extensivas de Random Forest
     "RandomForest_50": RandomForestClassifier(
-        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
     ),
     "RandomForest_100": RandomForestClassifier(
-        n_estimators=100, max_depth=None, min_samples_split=4, min_samples_leaf=1
+        n_estimators=100, max_depth=None, min_samples_split=4, min_samples_leaf=1, random_state=36
     ),
     "RandomForest_200_depth10": RandomForestClassifier(
-        n_estimators=200, max_depth=10, min_samples_split=2, min_samples_leaf=2
+        n_estimators=200, max_depth=10, min_samples_split=2, min_samples_leaf=2, random_state=36
     ),
     "RandomForest_500_depth15": RandomForestClassifier(
-        n_estimators=500, max_depth=15, min_samples_split=3, min_samples_leaf=1
+        n_estimators=500, max_depth=15, min_samples_split=3, min_samples_leaf=1, random_state=36
     ),
     "RandomForest_1000_minLeaf3": RandomForestClassifier(
-        n_estimators=1000, max_depth=None, min_samples_split=2, min_samples_leaf=3
+        n_estimators=1000, max_depth=None, min_samples_split=2, min_samples_leaf=3, random_state=36
     ),
     "RandomForest_300_depth20_minSplit6": RandomForestClassifier(
-        n_estimators=300, max_depth=20, min_samples_split=6, min_samples_leaf=1
+        n_estimators=300, max_depth=20, min_samples_split=6, min_samples_leaf=1, random_state=36
     ),
     "RandomForest_150_depth5": RandomForestClassifier(
-        n_estimators=150, max_depth=5, min_samples_split=4, min_samples_leaf=2
+        n_estimators=150, max_depth=5, min_samples_split=4, min_samples_leaf=2, random_state=36
     ),
     "RandomForest_50_minSplit8_minLeaf5": RandomForestClassifier(
-        n_estimators=50, max_depth=None, min_samples_split=8, min_samples_leaf=5
+        n_estimators=50, max_depth=None, min_samples_split=8, min_samples_leaf=5, random_state=36
     ),
     "RandomForest_400_minSplit10_depth30": RandomForestClassifier(
-        n_estimators=400, max_depth=30, min_samples_split=10, min_samples_leaf=2
+        n_estimators=400, max_depth=30, min_samples_split=10, min_samples_leaf=2, random_state=36
     ),
     "RandomForest_250_depthNone_minLeaf2": RandomForestClassifier(
-        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
+        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2, random_state=36
     ),
     "RandomForest_700_depthNone": RandomForestClassifier(
-        n_estimators=700, max_depth=None, min_samples_split=2, min_samples_leaf=1
+        n_estimators=700, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
     ),
     "RandomForest_500_depth25_minLeaf4": RandomForestClassifier(
-        n_estimators=500, max_depth=25, min_samples_split=5, min_samples_leaf=4
+        n_estimators=500, max_depth=25, min_samples_split=5, min_samples_leaf=4, random_state=36
     ),
     "RandomForest_300_depth15_minLeaf6": RandomForestClassifier(
-        n_estimators=300, max_depth=15, min_samples_split=8, min_samples_leaf=6
+        n_estimators=300, max_depth=15, min_samples_split=8, min_samples_leaf=6, random_state=36
     ),
     "RandomForest_100_depth20_minLeaf2": RandomForestClassifier(
-        n_estimators=100, max_depth=20, min_samples_split=3, min_samples_leaf=2
+        n_estimators=100, max_depth=20, min_samples_split=3, min_samples_leaf=2, random_state=36
     ),
     "RandomForest_200_depth30_minLeaf3": RandomForestClassifier(
-        n_estimators=200, max_depth=30, min_samples_split=4, min_samples_leaf=3
+        n_estimators=200, max_depth=30, min_samples_split=4, min_samples_leaf=3, random_state=36
     ),
 
     # Variaciones de MLPClassifier

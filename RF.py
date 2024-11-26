@@ -15,20 +15,20 @@ from sklearn.neighbors import KNeighborsClassifier
 
 def entrenar_modelo_rf(X, y, rf):
     # Dividir el conjunto de datos en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True)
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True, random_state=42)
 
 
     # Entrenar el modelo
-    rf.fit(X_train, y_train)
+    rf.fit(X, y)
 
     # Hacer predicciones
-    y_pred = rf.predict(X_test)
+    y_pred = rf.predict(X)
 
     # Evaluar la precisión del modelo
-    accuracy = accuracy_score(y_test, y_pred)
+    accuracy = accuracy_score(y, y_pred)
     print("Precisión del modelo:", accuracy)
         
-    return rf, y_pred, y_test
+    return rf, y_pred, y
 
 
 def predecir_sig_elem_rf(elem_originales, modelo, cant_predicciones):
@@ -54,17 +54,17 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
 
         
     rf_pitch = RandomForestClassifier(
-        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=42
     )
 
 
 
     rf_velocity = RandomForestClassifier(
-        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
     )
     
     rf_duration = RandomForestClassifier(
-        n_estimators=250, max_depth=None, min_samples_split=4, min_samples_leaf=2
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
     )
     
     
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     
     c_a = "Audios/"
 
-    cancion_a_continuar = "Audios/pk4.mid"
+    cancion_a_continuar = "Audios/elise.mid"
 
     
     
