@@ -66,11 +66,11 @@ def procesar_primera_pista(midi_file, nombre_pieza):
             pitches.append([elemento.pitch.midi])  # Altura MIDI de la nota
             velocidades.append(elemento.volume.velocity)  # Velocidad de la nota
             duraciones.append(elemento.quarterLength)  # Duración de la nota
-        # elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
-        #     nombres.append("Silencio")  # Indica que es un silencio
-        #     pitches.append([-1])  # Un silencio no tiene altura (pitch)
-        #     velocidades.append(0)  # Un silencio no tiene velocidad
-        #     duraciones.append(float(elemento.quarterLength))  # Duración del silencio
+        elif isinstance(elemento, note.Rest):  # Si el elemento es un silencio
+            nombres.append("Silencio")  # Indica que es un silencio
+            pitches.append([-1])  # Un silencio no tiene altura (pitch)
+            velocidades.append(0)  # Un silencio no tiene velocidad
+            duraciones.append(float(elemento.quarterLength))  # Duración del silencio
 
     #Retornar los datos procesados junto con el tempo
     return nombres, pitches, velocidades, duraciones, tempo_bpm
