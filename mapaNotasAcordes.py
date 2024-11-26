@@ -5,6 +5,7 @@ import sys
 def cargar_notas_acordes_canciones(carpeta_audios, nombre_pieza_1, nombre_pieza_2):
     notasyacordes_1 = []
     notasyacordes_2 = []
+<<<<<<< HEAD
     ##notasyacordes_1.append([-1])
     ##notasyacordes_2.append([-1])
     

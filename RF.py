@@ -54,17 +54,17 @@ def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_
 
         
     rf_pitch = RandomForestClassifier(
-        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=42
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1
     )
 
 
 
     rf_velocity = RandomForestClassifier(
-        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1
     )
     
     rf_duration = RandomForestClassifier(
-        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
+        n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1
     )
     
     
@@ -145,8 +145,8 @@ if __name__ == "__main__":
     get_ipython().magic('clear')
     
     #Segundos que se van a tomar para tomar secuencia
-    tiempo_secuencia=10
-    tiempo_a_predecir= 60
+    tiempo_secuencia=5
+    tiempo_a_predecir= 120 #debe ser mayor o igual a 2*tiempo_secuencia
     
     c_a = "Audios/"
 
@@ -159,11 +159,7 @@ if __name__ == "__main__":
     nombre_pista2 = "left"
     
     
-    # # #Si haces Audios
-    # nombre_pista1 = "piano right"
-    # nombre_pista2 = "piano left"
-    
-    
+
     l_s_r,l_s_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_secuencia,nombre_pista1,nombre_pista2)
     
     tempo_bpm = getTempo(cancion_a_continuar)
@@ -171,9 +167,13 @@ if __name__ == "__main__":
 
 
     cant_predicciones_r,cant_predicciones_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_a_predecir,nombre_pista1,nombre_pista2)
- 
     
-
+    
+    # l_s_r = 20
+    # l_s_l = 20
+    
+    # cant_predicciones_r = 234
+    # cant_predicciones_l = 100
 
     
     print("\n=====Cargando acordes presentes en canciones=====")
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(rf_p_l, rf_v_l, rf_d_l, l_s_l, mapa_left, cancion_a_continuar, nombre_pista2, cant_predicciones_l)
 
     cancion_nombre= 'cancion_generada_rf.mid'
-    cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm,firma_de_compas,cancion_nombre)
+    cancion_generada = generar_cancion([[p_conprediccion_r[2*l_s_r:-1], v_conprediccion_r[2*l_s_r:-1], d_conprediccion_r[2*l_s_r:-1]],[p_conprediccion_l[2*l_s_l:-1], v_conprediccion_l[2*l_s_l:-1], d_conprediccion_l[2*l_s_l:-1]]], tempo_bpm,firma_de_compas,cancion_nombre)
     #cancion_generada.write('midi', fp='cancion_generada_rf.mid')
     
     fragmento_nombre='fragmento_rf.mid'
