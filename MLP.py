@@ -11,6 +11,7 @@ from procesarMidi import cargarPista, generar_cancion,getTempo ,crear_secuencias
 
 from sklearn.neighbors import KNeighborsClassifier
 
+import random
 
 
 def entrenar_modelo_mlp(X, y, mlp):
@@ -155,6 +156,25 @@ def predecir_cancion(rf_pitch, rf_velocity, rf_duration, longitud_secuencia, not
         durations_conprediccion[i] /= 1000
 
     return pitches_conprediccion, velocities_conprediccion, durations_conprediccion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

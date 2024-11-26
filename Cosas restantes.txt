@@ -3,3 +3,5 @@ Comparacion con ayuda externa para la generacion de una nueva cancion - Tiene se
 Comparacion interna con estadistica para la generacion de una nueva cancion - Sigue la misma media y varianza que el fragmento inicial?
 
 Hacer ejemplos buenos para mostrar(a partir de wildstein)
+
+cambiar lstm por maximo promedio nomas
