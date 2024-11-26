@@ -145,8 +145,8 @@ if __name__ == "__main__":
     get_ipython().magic('clear')
     
     #Segundos que se van a tomar para tomar secuencia
-    tiempo_secuencia=10
-    tiempo_a_predecir= 60
+    # tiempo_secuencia=10
+    # tiempo_a_predecir= 60
     
     c_a = "Audios/"
 
