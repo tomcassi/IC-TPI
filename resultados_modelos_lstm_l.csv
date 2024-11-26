@@ -1,8 +1,8 @@
 Modelo,Accuracy
-pkelite4.mid,LSTM_128_single_dropout0.2,0.9305555555555556
-pkelite4.mid,LSTM_128_bidirectional,0.9305555555555556
-pkelite4.mid,GRU_128_dropout0.3,0.9375
-pkelite4.mid,LSTM_256_stack_dropout0.4,0.9305555555555556
-pkelite4.mid,LSTM_512_stack_dropout0.5_dense256,0.6388888888888888
-pkelite4.mid,GRU_256_stack_dropout0.3_dense128,0.9375
-pkelite4.mid,LSTM_GRU_combined,0.9305555555555556
+pkelite4.mid,LSTM_128_single_dropout0.2,0.9632352941176471
+pkelite4.mid,LSTM_128_bidirectional,0.9558823529411765
+pkelite4.mid,GRU_128_dropout0.3,0.8014705882352942
+pkelite4.mid,LSTM_256_stack_dropout0.4,0.9632352941176471
+pkelite4.mid,LSTM_512_stack_dropout0.5_dense256,0.8823529411764706
+pkelite4.mid,GRU_256_stack_dropout0.3_dense128,0.9779411764705882
+pkelite4.mid,LSTM_GRU_combined,0.9779411764705882

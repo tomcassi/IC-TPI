@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 
 
-from mapaNotasAcordes import cargar_notas_acordes_canciones
+from mapaNotasAcordes import cargar_notas_acordes_canciones,añadir_acordes_mapa
 from procesarMidi import cargarPista, generar_cancion,getTempo ,crear_secuencias,getTimeSignature,calcular_longitud_secuencia
 
 from sklearn.neighbors import KNeighborsClassifier
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     
     c_a = "Audios/"
 
-    cancion_a_continuar = "Audios/elise.mid"
+    cancion_a_continuar = "AudiosAux/elise.mid"
 
     
     
@@ -177,7 +177,9 @@ if __name__ == "__main__":
 
     
     print("\n=====Cargando acordes presentes en canciones=====")
+    
     mapa_right, mapa_left = cargar_notas_acordes_canciones(c_a,nombre_pista1, nombre_pista2)
+    mapa_right,mapa_left=añadir_acordes_mapa(mapa_right,mapa_left,cancion_a_continuar,"right","left")
     
     rf_p_r, rf_v_r, rf_d_r = inicializar_modelo(c_a,l_s_r, mapa_right, nombre_pista1)
     rf_p_l, rf_v_l, rf_d_l = inicializar_modelo(c_a,l_s_l, mapa_left, nombre_pista2)

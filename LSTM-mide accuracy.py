@@ -18,44 +18,6 @@ from procesarMidi import generar_cancion,cargarPista,crear_secuencias,getTempo,g
 
 from tensorflow.keras.callbacks import EarlyStopping
 
-def entrenar_modelo_lstm(X, y, modelo):
-    # Configuración de Early Stopping
-    #early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-    
-    # Dividir los datos para validación
-    X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.05, shuffle=True)
-    
-    # Entrenar el modelo
-    modelo.fit(
-        X_train, y_train,
-        validation_data=(X_val, y_val),
-        epochs=1000,  # Máximo de épocas
-        batch_size=128,
-        #callbacks=[early_stopping],  # Agregar el callback
-        verbose=1
-    )
-    return modelo
-
-
-
-
-def entrenar_modelo_rf(X, y, rf):
-    # Dividir el conjunto de datos en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.05, shuffle=True)
-
-
-    # Entrenar el modelo
-    rf.fit(X_train, y_train)
-
-    # Hacer predicciones
-    y_pred = rf.predict(X_test)
-
-    # Evaluar la precisión del modelo
-    accuracy = accuracy_score(y_test, y_pred)
-    print("Precisión del modelo:", accuracy)
-        
-    return rf, y_pred, y_test
-
 
 
 
@@ -271,7 +233,7 @@ def predecir_sig_elem_rf(elem_originales, modelo, cant_predicciones):
 if __name__ == "__main__":
     from IPython import get_ipython
     get_ipython().magic('clear')
-    tiempo_secuencia=3
+    tiempo_secuencia=5
     tiempo_a_predecir=60
 
     c_a = "Audios/"
