@@ -150,7 +150,7 @@ if __name__ == "__main__":
     
     c_a = "Audios/"
 
-    cancion_a_continuar = "AudiosAux/elise.mid"
+    cancion_a_continuar = "AudiosAux/waldstein_3.mid"
 
     
     
@@ -159,21 +159,22 @@ if __name__ == "__main__":
     nombre_pista2 = "left"
     
     
-    # # #Si haces Audios
-    # nombre_pista1 = "piano right"
-    # nombre_pista2 = "piano left"
-    
-    
-    l_s_r,l_s_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_secuencia,nombre_pista1,nombre_pista2)
+
+    # l_s_r,l_s_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_secuencia,nombre_pista1,nombre_pista2)
     
     tempo_bpm = getTempo(cancion_a_continuar)
     firma_de_compas = getTimeSignature(cancion_a_continuar)
 
 
-    cant_predicciones_r,cant_predicciones_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_a_predecir,nombre_pista1,nombre_pista2)
+    # cant_predicciones_r,cant_predicciones_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_a_predecir,nombre_pista1,nombre_pista2)
  
     
-
+     
+    l_s_r = 20
+    l_s_l = 20
+    
+    cant_predicciones_r = 234
+    cant_predicciones_l = 100
 
     
     print("\n=====Cargando acordes presentes en canciones=====")
