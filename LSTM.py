@@ -21,7 +21,7 @@ def entrenar_modelo_lstm(X, y, modelo):
     # Entrenar el modelo
     modelo.fit(
         X, y,
-        epochs=5,  # Máximo de épocas
+        epochs=200,  # Máximo de épocas
         batch_size=32,
         verbose=1
     )
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     tiempo_a_predecir=100
 
     c_a = "Audios/"
-    cancion_a_continuar = "AudiosAux/elise.mid"
+    cancion_a_continuar = "AudiosAux/waldstein_3.mid"
     
     ##Si haces Audios
     nombre_pista1 = "piano right"
