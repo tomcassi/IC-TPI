@@ -23,19 +23,19 @@ def entrenar_modelo_lstm(X, y, modelo):
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
     # Configurar Early Stopping
-    early_stopping = EarlyStopping(
-        monitor='val_loss',       # Monitorea la pérdida en el conjunto de validación
-        patience=5,               # Detiene si no mejora en 5 épocas consecutivas
-        restore_best_weights=True # Restaura los pesos del mejor modelo
-    )
+    # early_stopping = EarlyStopping(
+    #     monitor='val_loss',       # Monitorea la pérdida en el conjunto de validación
+    #     patience=20,               # Detiene si no mejora en 5 épocas consecutivas
+    #     restore_best_weights=True # Restaura los pesos del mejor modelo
+    # )
 
     # Entrenar el modelo
     modelo.fit(
         X_train, y_train,
         validation_data=(X_val, y_val),
-        epochs=30,                # Máximo número de épocas
+        epochs=100,                # Máximo número de épocas
         batch_size=64,
-        callbacks=[early_stopping], # Agrega Early Stopping como callback
+        #callbacks=[early_stopping], # Agrega Early Stopping como callback
         verbose=1
     )
 
@@ -283,7 +283,7 @@ if __name__ == "__main__":
     #tiempo_a_predecir=100
 
     c_a = "Audios/"
-    cancion_a_continuar = "AudiosAux/elise.mid"
+    #cancion_a_continuar = "AudiosAux/elise.mid"
     
     ##Si haces Audios
     nombre_pista1 = "piano right"
@@ -297,9 +297,11 @@ if __name__ == "__main__":
     #l_s_r,l_s_l=calcular_longitud_secuencia(cancion_a_continuar, tiempo_secuencia,nombre_pista1,nombre_pista2)
 
     
-    tempo_bpm = getTempo(cancion_a_continuar)
+    #tempo_bpm = getTempo(cancion_a_continuar)
+    tempo_bpm=89
     
-    firma_de_compas = getTimeSignature(cancion_a_continuar)
+    #firma_de_compas = getTimeSignature(cancion_a_continuar)
+    firma_de_compas = "4/4"
     l_s_r=20
     l_s_l=20
     cant_predicciones_r=400
