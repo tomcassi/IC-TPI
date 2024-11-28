@@ -236,3 +236,6 @@ def crear_secuencias(caracteristicas, longitud_secuencia):
 
 
 
+
+
+

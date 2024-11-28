@@ -22,12 +22,12 @@ import random
 def entrenar_modelo_lstm(X, y, modelo):
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
-    # Configurar Early Stopping
-    # early_stopping = EarlyStopping(
-    #     monitor='val_loss',       # Monitorea la pérdida en el conjunto de validación
-    #     patience=20,               # Detiene si no mejora en 5 épocas consecutivas
-    #     restore_best_weights=True # Restaura los pesos del mejor modelo
-    # )
+    #Configurar Early Stopping
+    early_stopping = EarlyStopping(
+        monitor='val_loss',       # Monitorea la pérdida en el conjunto de validación
+        patience=20,               # Detiene si no mejora en 5 épocas consecutivas
+        restore_best_weights=True # Restaura los pesos del mejor modelo
+    )
 
     # Entrenar el modelo
     modelo.fit(
@@ -35,7 +35,7 @@ def entrenar_modelo_lstm(X, y, modelo):
         validation_data=(X_val, y_val),
         epochs=100,                # Máximo número de épocas
         batch_size=64,
-        #callbacks=[early_stopping], # Agrega Early Stopping como callback
+        callbacks=[early_stopping], # Agrega Early Stopping como callback
         verbose=1
     )
 
@@ -298,10 +298,10 @@ if __name__ == "__main__":
 
     
     #tempo_bpm = getTempo(cancion_a_continuar)
-    tempo_bpm=89
+    tempo_bpm=70
     
     #firma_de_compas = getTimeSignature(cancion_a_continuar)
-    firma_de_compas = "4/4"
+    firma_de_compas = "1/8"
     l_s_r=20
     l_s_l=20
     cant_predicciones_r=400
