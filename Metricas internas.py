@@ -7,6 +7,12 @@ from music21 import converter, meter
 
 from music21 import converter, tempo, note, chord
 
+from collections import Counter
+
+
+
+
+
 def cargarPista2(archivo_midi):
     """
     Función para cargar un archivo MIDI y procesar todas las partes contenidas en él.
@@ -135,11 +141,17 @@ def calcular_metrica_armonica_normalizada(pitches):
         metrica += intervalo
     return int(metrica / len(pitches))
 
-# Carpeta que contiene los archivos MIDI
-carpeta_midi = "A"
+import os
+import csv
+
+
+carpeta_midi = "_A"
 
 # Diccionario para almacenar las métricas por archivo
 metricas = {}
+
+# Variable para contar las canciones
+contador_canciones = 1
 
 # Recorrer todos los archivos en la carpeta
 for archivo in os.listdir(carpeta_midi):
@@ -167,23 +179,43 @@ for archivo in os.listdir(carpeta_midi):
         metrica_right = calcular_metrica_armonica_normalizada(caracteristicas_right[1])
         metrica_left = calcular_metrica_armonica_normalizada(caracteristicas_left[1])
 
-        # Almacenar las métricas en el diccionario
-        metricas[archivo] = {
+        # Asignar un nombre a la canción (cancion1, cancion2, ...)
+        nombre_cancion = f"cancion{contador_canciones}"
+
+        # Almacenar las métricas en el diccionario con el nombre de la canción
+        metricas[nombre_cancion] = {
             "metrica_right": metrica_right,
             "metrica_left": metrica_left
         }
 
+        # Incrementar el contador para el siguiente archivo
+        contador_canciones += 1
+
+# Guardar las métricas en un archivo CSV
+with open('metricas_canciones.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    
+    # Escribir el encabezado (nombres de las columnas)
+    writer.writerow(['Cancion', 'Metrica_Right', 'Metrica_Left'])
+    
+    # Escribir las métricas por cada canción
+    for cancion, valores in metricas.items():
+        writer.writerow([cancion, valores['metrica_right'], valores['metrica_left']])
+
 # Imprimir las métricas calculadas
-for archivo, valores in metricas.items():
-    print(f"{archivo}: Right={valores['metrica_right']}, Left={valores['metrica_left']}")
+for cancion, valores in metricas.items():
+    print(f"{cancion}: Right={valores['metrica_right']}, Left={valores['metrica_left']}")
+
 
 
 
 ##
 
 
+import os
+import csv
 # Carpeta que contiene los archivos MIDI
-carpeta_midi = "B"
+carpeta_midi = "Audios/"
 
 # Diccionario para almacenar las métricas por archivo
 metricas = {}
@@ -220,7 +252,20 @@ for archivo in os.listdir(carpeta_midi):
             "metrica_left": metrica_left
         }
 
+# Guardar las métricas en un archivo CSV
+with open('metricas_midi.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    
+    # Escribir el encabezado (nombres de las columnas)
+    writer.writerow(['Archivo', 'Metrica_Right', 'Metrica_Left'])
+    
+    # Escribir las métricas por cada archivo MIDI
+    for archivo, valores in metricas.items():
+        writer.writerow([archivo, valores['metrica_right'], valores['metrica_left']])
+
 # Imprimir las métricas calculadas
 for archivo, valores in metricas.items():
     print(f"{archivo}: Right={valores['metrica_right']}, Left={valores['metrica_left']}")
+
+
 
