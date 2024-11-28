@@ -1,7 +1,5 @@
-from mapaNotasAcordes import cargar_notas_acordes_canciones,añadir_acordes_mapa
-from procesarMidi import generar_cancion,cargarPista,crear_secuencias,getTempo,getTimeSignature,calcular_longitud_secuencia,procesar_primera_pista
+from mapaNotasAcordes import cargar_notas_acordes_canciones
 from music21 import converter, tempo, chord, note, instrument, stream,meter
-from music21 import converter, note, stream
 
 from music21 import converter, meter
 
@@ -14,16 +12,7 @@ from collections import Counter
 
 
 def cargarPista2(archivo_midi):
-    """
-    Función para cargar un archivo MIDI y procesar todas las partes contenidas en él.
-    
-    Parámetros:
-        archivo_midi (str): Ruta del archivo MIDI.
-    
-    Retorna:
-        todos_caracteristicas (list): Una lista con las características [pitches, velocidades, duraciones, tempo_bpm]
-                                      de todas las partes procesadas.
-    """
+
     todos_caracteristicas = []
     try:
         # Llamada a la función para procesar todas las partes del archivo MIDI
@@ -36,16 +25,8 @@ def cargarPista2(archivo_midi):
 
 
 def procesar_primera_pista2(midi_file):
-    """
-    Función para procesar todas las partes de un archivo MIDI, extrayendo notas, acordes, velocidades y duraciones.
     
-    Parámetros:
-        midi_file (str): Ruta del archivo MIDI.
-    
-    Retorna:
-        datos_partes (list): Lista de listas donde cada elemento contiene los datos de una parte del archivo MIDI
-                             en el formato [nombres, pitches, velocidades, duraciones, tempo_bpm].
-    """
+
     try:
         midi_data = converter.parse(midi_file)
     except Exception as e:
@@ -90,22 +71,6 @@ def procesar_primera_pista2(midi_file):
     return datos_partes
 
 
-def calcular_metrica_armonica(pitches):
-    """
-    Calcula la métrica armónica sumando las diferencias absolutas entre notas consecutivas.
-
-    Parámetros:
-        pitches (list): Lista de alturas (en valores MIDI) de las notas.
-
-    Retorna:
-        metrica (int): Valor entero que representa el movimiento tonal total.
-    """
-    metrica = 0
-    for i in range(len(pitches) - 1):
-        intervalo = abs(pitches[i + 1] - pitches[i])
-        metrica += intervalo
-    return metrica
-
 
 
 c_a = "Audios/"
@@ -123,16 +88,7 @@ mapa_right, mapa_left = cargar_notas_acordes_canciones(c_a,nombre_pista1, nombre
 import os
 
 def calcular_metrica_armonica_normalizada(pitches):
-    """
-    Calcula la métrica armónica normalizada sumando las diferencias absolutas 
-    entre notas consecutivas y dividiendo por la cantidad de notas.
-
-    Parámetros:
-        pitches (list): Lista de alturas (en valores MIDI) de las notas.
-
-    Retorna:
-        metrica_normalizada (float): Valor de la métrica normalizada.
-    """
+ 
     if len(pitches) < 2:  # Si hay menos de dos notas, la métrica es 0
         return 0
     metrica = 0
@@ -266,6 +222,15 @@ with open('metricas_midi.csv', mode='w', newline='') as file:
 # Imprimir las métricas calculadas
 for archivo, valores in metricas.items():
     print(f"{archivo}: Right={valores['metrica_right']}, Left={valores['metrica_left']}")
+    
+    
+
+
+
+
+
+
+
 
 
 
