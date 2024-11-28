@@ -7,6 +7,9 @@ from music21 import converter, tempo, note, chord
 
 from collections import Counter
 
+import os
+import csv
+
 
 
 
@@ -97,8 +100,6 @@ def calcular_metrica_armonica_normalizada(pitches):
         metrica += intervalo
     return int(metrica / len(pitches))
 
-import os
-import csv
 
 
 carpeta_midi = "_A"
@@ -171,7 +172,7 @@ for cancion, valores in metricas.items():
 import os
 import csv
 # Carpeta que contiene los archivos MIDI
-carpeta_midi = "Audios/"
+carpeta_midi = "_A/"
 
 # Diccionario para almacenar las métricas por archivo
 metricas = {}

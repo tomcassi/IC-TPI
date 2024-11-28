@@ -251,40 +251,6 @@ if __name__ == "__main__":
 
 print(f"Resultados exportados a {archivo_csv}")
     
-    # p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(rf_p_r, rf_v_r, rf_d_r, l_s_r, mapa_right, cancion_a_continuar, nombre_pista1, cant_predicciones_r)
-    # p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(rf_p_l, rf_v_l, rf_d_l, l_s_l, mapa_left, cancion_a_continuar, nombre_pista2, cant_predicciones_l)
-
-    # cancion_nombre= 'cancion_generada_rf.mid'
-    # cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm,firma_de_compas,cancion_nombre)
-    # #cancion_generada.write('midi', fp='cancion_generada_rf.mid')
     
-    # fragmento_nombre='fragmento_rf.mid'
-    # fragmento = generar_cancion([[p_conprediccion_r[0:l_s_r], v_conprediccion_r[0:l_s_r], d_conprediccion_r[0:l_s_r]],[p_conprediccion_l[0:l_s_l], v_conprediccion_l[0:l_s_l], d_conprediccion_l[0:l_s_l]]], tempo_bpm,firma_de_compas,fragmento_nombre)
-   
-    
-   
-    
-   
-    #fragmento.write('midi', fp='fragmento.mid')
-    
-        
-    # ##comentar/descomentar para todas las canciones
-
-    # for cancion in os.listdir(c_a):
-    #     cancion_a_continuar = cancion
-    #     path_cancion_a_continuar = os.path.join(c_a, cancion_a_continuar)
-        
-    #     tempo_bpm = getTempo(path_cancion_a_continuar)
-        
-    #     p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(rf_p_r, rf_v_r, rf_d_r, l_s, mapa_right, path_cancion_a_continuar, nombre_pista1, cant_predicciones)
-    #     p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(rf_p_l, rf_v_l, rf_d_l, l_s, mapa_left, path_cancion_a_continuar, nombre_pista2, cant_predicciones)
-    
-    #     cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm)
-    #     path_cancion_generada = os.path.join("Ejemplos/", cancion_a_continuar)
-    #     cancion_generada.write('midi', fp=path_cancion_generada)
-        
-    #     fragmento = generar_cancion([[p_conprediccion_r[0:l_s], v_conprediccion_r[0:l_s], d_conprediccion_r[0:l_s]],[p_conprediccion_l[0:l_s], v_conprediccion_l[0:l_s], d_conprediccion_l[0:l_s]]], tempo_bpm)
-    #     path_fragmento = os.path.join("Ejemplos/", cancion_a_continuar.replace('.mid', '_fragmento.mid'))
-    #     fragmento.write('midi', fp=path_fragmento)
     
     

@@ -103,10 +103,10 @@ def entrenar_modelo_rf(X, y, rf):
 def inicializar_modelo(carpeta_audios,longitud_secuencia, notasyacordes, nombre_pieza):
 
         
-    mlp_pitch = MLPClassifier(hidden_layer_sizes=(50, 50), solver='lbfgs', max_iter=10, random_state=42)
+    mlp_pitch = MLPClassifier(hidden_layer_sizes=(50, 50), solver='lbfgs', max_iter=100)
 
 
-
+    #Se probo si variaba utilizando RF, pero el resultado es el mismo
     rf_velocity = RandomForestClassifier(
         n_estimators=50, max_depth=None, min_samples_split=2, min_samples_leaf=1, random_state=36
     )

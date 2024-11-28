@@ -1,9 +1,9 @@
-Cancion,Metrica_Left,Metrica_Right
-Cancion 1 - LSTM,4,2
-Cancion 2 - LSTM,3,3
-Cancion 3 - LSTM,3,4
-Cancion 4 - LSTM,4,3
-Cancion 5 -  LSTM,4,4
-Cancion 1 - RF,5,3
-Cancion 2 - RF,7,3
-Cancion 1 - MLP,0,0
+Cancion,Metrica_Right,Metrica_Left
+cancion1,2,4
+cancion2,3,3
+cancion3,4,3
+cancion4,3,4
+cancion5,4,4
+cancion6,3,5
+cancion7,3,7
+cancion8,0,0

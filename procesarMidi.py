@@ -2,6 +2,7 @@ from music21 import converter, tempo, chord, note, instrument, stream,meter
 
 import sys
 
+
 def cargarPista (archivo_midi, nombre_pieza):
     # Listas grandes para almacenar todos los datos de los archivos MIDI
     todos_caracteristicas = []
@@ -28,9 +29,7 @@ def procesar_primera_pista(midi_file, nombre_pieza):
     tempos = midi_data.flatten().getElementsByClass(tempo.MetronomeMark)
     tempo_bpm = tempos[0].number if len(tempos) > 0 else 120  # Valor predeterminado: 120 BPM
 
-   
 
-    
 
     # Filtrar la parte de "Piano Right"
     parte = None
@@ -180,10 +179,6 @@ def getTimeSignature(midi_file):
 
 
 
-
-from music21 import converter, note, stream
-
-from music21 import converter, meter
 
 def calcular_longitud_secuencia(path_cancion, duracion_en_segundos,nombre_pieza1,nombre_pieza2):
 

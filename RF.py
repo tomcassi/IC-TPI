@@ -1,5 +1,6 @@
 import os
 import numpy as np
+   
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -249,8 +250,7 @@ if __name__ == "__main__":
     notas_a_tomar_r = 3*l_s_r
     notas_a_tomar_l = 3*l_s_l
     
-   
-    import os
+
     
     # Crear la carpeta "resultados_lstm" si no existe
     directorio = "resultados_rf"
@@ -293,26 +293,4 @@ if __name__ == "__main__":
    
     
    
-    #fragmento.write('midi', fp='fragmento.mid')
-    
-        
-    # ##comentar/descomentar para todas las canciones
-
-    # for cancion in os.listdir(c_a):
-    #     cancion_a_continuar = cancion
-    #     path_cancion_a_continuar = os.path.join(c_a, cancion_a_continuar)
-        
-    #     tempo_bpm = getTempo(path_cancion_a_continuar)
-        
-    #     p_conprediccion_r, v_conprediccion_r, d_conprediccion_r = predecir_cancion(rf_p_r, rf_v_r, rf_d_r, l_s, mapa_right, path_cancion_a_continuar, nombre_pista1, cant_predicciones)
-    #     p_conprediccion_l, v_conprediccion_l, d_conprediccion_l = predecir_cancion(rf_p_l, rf_v_l, rf_d_l, l_s, mapa_left, path_cancion_a_continuar, nombre_pista2, cant_predicciones)
-    
-    #     cancion_generada = generar_cancion([[p_conprediccion_r, v_conprediccion_r, d_conprediccion_r],[p_conprediccion_l, v_conprediccion_l, d_conprediccion_l]], tempo_bpm)
-    #     path_cancion_generada = os.path.join("Ejemplos/", cancion_a_continuar)
-    #     cancion_generada.write('midi', fp=path_cancion_generada)
-        
-    #     fragmento = generar_cancion([[p_conprediccion_r[0:l_s], v_conprediccion_r[0:l_s], d_conprediccion_r[0:l_s]],[p_conprediccion_l[0:l_s], v_conprediccion_l[0:l_s], d_conprediccion_l[0:l_s]]], tempo_bpm)
-    #     path_fragmento = os.path.join("Ejemplos/", cancion_a_continuar.replace('.mid', '_fragmento.mid'))
-    #     fragmento.write('midi', fp=path_fragmento)
-    
     
